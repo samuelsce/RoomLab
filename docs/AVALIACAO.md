@@ -10,7 +10,9 @@ Este guia oferece um caminho curto para conhecer o RoomLab como produto e aprofu
 | Trocar para planta e arrastar com zoom | Correspondência entre ponteiro, peça e limites do quarto |
 | Girar/redimensionar perto de uma parede | Limites geométricos continuam válidos após a rotação |
 | Desfazer um arrasto completo | Um gesto produz uma ação de histórico |
-| Adicionar por toque em uma tela estreita | Catálogo e propriedades continuam acessíveis sem depender de drag-and-drop |
+| Adicionar por toque em uma tela estreita | O quarto permanece visível acima das propriedades, que têm rolagem própria |
+| Abrir Compartilhar e pressionar Delete ou Ctrl+D | O diálogo mantém a composição e o histórico do quarto intactos |
+| Usar Pular para o conteúdo ou Os ambientes | A seção recebe foco, sem trocar de rota ou perder o rascunho |
 | Editar, salvar e recarregar | Retorna a última versão salva, com nome e composição preservados |
 | Sair com edições pendentes | O aviso permite cancelar e continuar a edição |
 | Compartilhar e abrir em outra sessão | A composição abre sem a biblioteca local do autor |
@@ -25,6 +27,7 @@ Ative a preferência de movimento reduzido no sistema ou no navegador e repita o
 | --- | --- | --- |
 | Estado e histórico | [editorModel.ts](../src/features/editor/editorModel.ts), [useRoomEditor.ts](../src/features/editor/useRoomEditor.ts) | [editor-model.test.ts](../tests/editor-model.test.ts) |
 | Ponteiro e transformações | [RoomScene.tsx](../src/features/editor/RoomScene.tsx), [geometry.ts](../src/features/editor/geometry.ts) | [editor.spec.ts](../tests/editor.spec.ts) |
+| Foco, diálogos e painel compacto | [SectionLink.tsx](../src/components/SectionLink.tsx), [Editor.tsx](../src/pages/Editor.tsx) | [dialog-shortcuts.spec.ts](../tests/dialog-shortcuts.spec.ts), [touch.spec.ts](../tests/touch.spec.ts), [pages.spec.ts](../tests/pages.spec.ts) |
 | Persistência e recuperação | [storage.ts](../src/features/setups/storage.ts), [useSetupSave.ts](../src/features/setups/useSetupSave.ts) | [storage.test.ts](../tests/storage.test.ts), [setups.spec.ts](../tests/setups.spec.ts) |
 | Compartilhamento e validação | [document.ts](../src/features/sharing/document.ts), [codec.ts](../src/features/sharing/codec.ts) | [sharing.test.ts](../tests/sharing.test.ts), [sharing.spec.ts](../tests/sharing.spec.ts) |
 | Representação 3D e recursos | [projection.ts](../src/features/room3d/projection.ts), [RoomCanvas.tsx](../src/features/room3d/RoomCanvas.tsx) | [projection.test.ts](../tests/projection.test.ts), [studio.spec.ts](../tests/studio.spec.ts) |

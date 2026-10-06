@@ -25,7 +25,7 @@ Para avaliar o código, comece pelo [guia de avaliação técnica](docs/AVALIACA
 - Adição por clique/toque ou arrasto na planta, seleção, movimento, rotação, tamanho e cores.
 - Duplicação, exclusão, camadas, grade e histórico de desfazer/refazer por ação.
 - Visualização 3D com mobiliário volumétrico, materiais, sombras, câmera e controles de luz.
-- Interface responsiva, atalhos, foco visível, mensagens de estado e preferência por movimento reduzido.
+- Interface responsiva com propriedades em painel inferior, atalhos protegidos durante diálogos, foco visível, mensagens de estado e preferência por movimento reduzido.
 - Biblioteca local: nomear, salvar, reabrir, duplicar e excluir, com validação e detecção de versões desatualizadas entre abas.
 - Importação/exportação JSON, PNG da vista atual e links com uma cópia fixa do quarto.
 
@@ -77,7 +77,7 @@ npm run test:pages -- --workers=2
 npm run build
 ```
 
-A validação local do [refinamento 3D](docs/REFINAMENTO-3D.md) aprovou **26 testes unitários, 72 casos de navegador e 2 casos do build de Pages**. Seis casos adicionais são ignorados nos perfis em que não se aplicam. Os perfis de desktop, tablet e celular usam Chromium; não representam certificação em dispositivos físicos ou em todos os navegadores.
+A validação local da [revisão de UX](docs/CORRECOES-UX.md) aprovou **26 testes unitários, 80 casos de navegador e 4 casos do build de Pages**. Sete casos adicionais são ignorados nos perfis em que não se aplicam. Os perfis de desktop, tablet e celular usam Chromium; não representam certificação em dispositivos físicos ou em todos os navegadores.
 
 O [workflow](.github/workflows/pages.yml) executa lint, formatação, testes e build antes de publicar. [Execução validada da entrega 3D](https://github.com/samuelsce/RoomLab/actions/runs/37417938419). `npm run test:live` verifica a demo pública, o 3D gamer, compartilhamento em sessão independente e cópia editável.
 
