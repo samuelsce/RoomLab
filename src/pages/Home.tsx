@@ -34,6 +34,7 @@ export function Home() {
       <header className="home-header">
         <Brand />
         <nav aria-label="Navegação principal">
+          <Link to="/setups">Meus setups</Link>
           <a href="#examples">Ver exemplos</a>
           <Link to="/editor" className="button button-small">
             Abrir editor <ArrowUpRight size={16} aria-hidden="true" />
@@ -65,7 +66,7 @@ export function Home() {
             <p className="prototype-caption">
               Adicione peças, experimente cores e organize o quarto.
               <br />
-              Salvamento disponível na próxima entrega.
+              Salve seu setup neste navegador e continue depois.
             </p>
           </div>
           <div className="hero-room">

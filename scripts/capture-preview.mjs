@@ -21,6 +21,19 @@ try {
         fullPage: true,
       })
     }
+    await page.goto('http://127.0.0.1:5173/setups')
+    await page.screenshot({
+      path: `${directory}/setups-empty-${name}.png`,
+      fullPage: true,
+    })
+    await page.goto('http://127.0.0.1:5173/editor?scene=plants')
+    await page.getByLabel('Nome do setup').fill('Meu cantinho com plantas')
+    await page.getByRole('button', { name: 'Salvar', exact: true }).click()
+    await page.getByRole('link', { name: 'Meus setups', exact: true }).click()
+    await page.screenshot({
+      path: `${directory}/setups-${name}.png`,
+      fullPage: true,
+    })
     await page.close()
   }
 } finally {

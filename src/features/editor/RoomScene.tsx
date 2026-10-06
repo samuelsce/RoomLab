@@ -87,7 +87,7 @@ export function RoomScene({
           ? 'Quarto vazio em vista superior'
           : onEdit
             ? 'Quarto em vista superior com peças editáveis'
-            : 'Quarto ilustrado em vista superior com mesa, monitor, cadeira e plantas'
+            : 'Composição do quarto em vista superior'
       }
       onPointerDown={(event) => {
         if (onEdit && !(event.target as Element).closest('[data-object-id]'))
@@ -255,7 +255,7 @@ export function RoomScene({
       {objects.map((object) => (
         <g
           key={object.id}
-          data-object-id={object.id}
+          data-object-id={onEdit ? object.id : undefined}
           transform={`translate(${object.x} ${object.y}) rotate(${object.rotation ?? 0} ${object.w / 2} ${object.h / 2})`}
         >
           {selected === object.id && (

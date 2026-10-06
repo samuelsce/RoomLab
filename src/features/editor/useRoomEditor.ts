@@ -10,10 +10,13 @@ import {
 import { getSceneObjects } from './scenes'
 import type { SceneName, SceneObject } from './scenes'
 
-export function useRoomEditor(scene: SceneName) {
+export function useRoomEditor(
+  scene: SceneName,
+  initialObjects?: SceneObject[],
+) {
   const [state, dispatch] = useReducer(
     editorReducer,
-    getSceneObjects(scene),
+    initialObjects ?? getSceneObjects(scene),
     createEditorState,
   )
   const [selectedId, select] = useState<string | null>(

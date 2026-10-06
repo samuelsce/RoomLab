@@ -2,7 +2,7 @@
 
 Projeto de portfólio front-end: um editor visual para montar e personalizar um quarto com um setup de trabalho ou jogos.
 
-Status: segunda entrega implementada, com editor funcional. Desenvolvimento em `feat/room-editor`.
+Status: terceira entrega implementada, com editor e biblioteca de setups locais. Desenvolvimento em `feat/local-setups`.
 
 ![Home do RoomLab](docs/screenshots/home-desktop.png)
 
@@ -16,8 +16,11 @@ Status: segunda entrega implementada, com editor funcional. Desenvolvimento em `
 - Mover com mouse/toque ou teclado, girar, redimensionar e trocar cores.
 - Duplicar, excluir, ordenar camadas, alinhar à grade e desfazer/refazer.
 - Layout de três áreas no desktop e painéis alternáveis no mobile.
+- Nomear, salvar, reabrir, duplicar e excluir setups locais com miniaturas.
+- Exportar/importar backup JSON validado e baixar PNG da composição.
+- Aviso de edições pendentes, erros de armazenamento e conflitos entre versões de abas.
 
-As alterações ficam em memória nesta sessão. Recarregar ou sair do editor descarta a edição. Salvar, exportar e compartilhar serão as próximas entregas. As dimensões do quarto são ilustrativas; posições e tamanhos dos objetos usam unidades do desenho.
+Use **Salvar** após editar. Os setups ficam no armazenamento deste navegador, limitados a 30 quartos de até 100 objetos cada. Recarregar reabre a última versão salva; limpar os dados do site exclui os setups. Exporte JSON para guardar um backup ou levar a outro dispositivo. As URLs locais não são links públicos. Compartilhamento será a próxima etapa. As dimensões do quarto são ilustrativas; posições e tamanhos dos objetos usam unidades do desenho.
 
 ## Rodar localmente
 
@@ -28,7 +31,7 @@ npm ci
 npm run dev
 ```
 
-Abra o endereço mostrado no terminal. As rotas principais são `/` e `/editor`. Os exemplos também podem ser abertos diretamente em `/editor?scene=study`, `dual`, `plants` ou `empty`.
+Abra o endereço mostrado no terminal. As rotas principais são `/`, `/editor` e `/setups`. Os exemplos também podem ser abertos diretamente em `/editor?scene=study`, `dual`, `plants` ou `empty`. Um setup salvo abre em `/editor?setup=<id>` no mesmo navegador e endereço do site.
 
 ## Verificar
 
@@ -59,6 +62,7 @@ Demonstrar interfaces responsivas, manipulação gráfica, estado complexo, aces
 - [Fluxo de desenvolvimento e aprendizado](docs/DESENVOLVIMENTO.md)
 - [Primeira entrega: decisões, verificação e guia de aprendizado](docs/ENTREGA-01.md)
 - [Segunda entrega: geometria, interações e histórico](docs/ENTREGA-02.md)
+- [Terceira entrega: persistência, biblioteca e backups](docs/ENTREGA-03.md)
 - [Créditos dos assets](docs/CREDITOS.md)
 
 ## Versionamento
