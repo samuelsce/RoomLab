@@ -80,6 +80,6 @@ Demonstrar interfaces responsivas, manipulação gráfica, estado complexo, aces
 
 A `main` recebe entregas revisadas. Planejamento e implementação acontecem em branches específicas. A proteção automática da `main` ainda não foi configurada no GitHub.
 
-Repositório: [samuelsce/RoomLab](https://github.com/samuelsce/RoomLab). A demo está publicada no GitHub Pages. O [workflow da quarta entrega](https://github.com/samuelsce/RoomLab/actions/runs/37413959090) terminou com sucesso. O endereço real foi verificado com compartilhamento em sessão independente, edição de cópia e recarregamento. Novas publicações passam pelos checks do workflow.
+Repositório: [samuelsce/RoomLab](https://github.com/samuelsce/RoomLab). A demo está publicada no GitHub Pages. O [workflow da quinta entrega](https://github.com/samuelsce/RoomLab/actions/runs/37417938419) terminou com sucesso. O endereço real foi verificado com quarto gamer 3D, compartilhamento em sessão independente, edição de cópia e recarregamento. Novas publicações passam pelos checks do workflow.
 
 No Pages, o aplicativo usa rotas com `#`, como `/RoomLab/#/editor`, para recarregar sem precisar de servidor de rotas. Links compartilhados usam `/RoomLab/#/setup?data=v1...`. A composição é compactada no próprio endereço; não há banco, chaves secretas ou links curtos nesta versão. O limite é 12.000 caracteres para o conteúdo do link. Veja os limites e a configuração em [ENTREGA-04.md](docs/ENTREGA-04.md).
