@@ -61,9 +61,27 @@ test('built Pages app reloads hash routes and opens a share without a server or 
     page.getByRole('heading', { name: 'Cama', exact: true }),
   ).toBeVisible()
   await page.getByRole('button', { name: 'Cor Verde', exact: true }).click()
+  await page
+    .getByRole('button', {
+      name: 'Editar mesa de madeira na lista',
+      exact: true,
+    })
+    .click()
+  await page
+    .getByRole('button', { name: 'Mover com equipamentos', exact: true })
+    .click()
+  await page
+    .getByRole('button', { name: 'Personalizar ambiente', exact: true })
+    .click()
+  await page.getByRole('button', { name: 'Parede Sálvia', exact: true }).click()
+  await page.getByRole('button', { name: 'Piso Nogueira', exact: true }).click()
+  await page.getByRole('button', { name: 'Concluir', exact: true }).click()
   await page.getByLabel('Nome do setup').fill('Setup no GitHub Pages')
   await page.getByRole('button', { name: 'Salvar', exact: true }).click()
   await page.reload()
+  await expect(canvas).toHaveAttribute('data-scene', 'gamer')
+  await expect(canvas).toHaveAttribute('data-wall', '#889f93')
+  await expect(canvas).toHaveAttribute('data-floor', 'walnut')
   await expect(page.getByLabel('Nome do setup')).toHaveValue(
     'Setup no GitHub Pages',
   )
@@ -98,6 +116,13 @@ test('built Pages app reloads hash routes and opens a share without a server or 
     .getByRole('button', { name: 'Planta 2D', exact: true })
     .click()
   await expect(recipient.locator('[data-object-id]')).toHaveCount(10)
+  await expect(recipient.getByTestId('editable-room')).toHaveAttribute(
+    'data-floor',
+    'walnut',
+  )
+  await expect(
+    recipient.getByTestId('editable-room').locator('[data-attached-to="desk"]'),
+  ).toHaveCount(4)
   await expect(
     recipient.locator('[data-object-id="bed"] rect[fill="#48705a"]').first(),
   ).toBeVisible()
