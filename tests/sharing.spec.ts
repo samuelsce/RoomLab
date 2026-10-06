@@ -18,6 +18,10 @@ test('link opens in an independent browser session and edits preserve the shared
   const recipient = await browser.newContext()
   const viewer = await recipient.newPage()
   await viewer.goto(url)
+  await viewer.getByRole('link', { name: 'Pular para o conteúdo' }).focus()
+  await viewer.keyboard.press('Enter')
+  await expect(viewer.locator('#main-content')).toBeFocused()
+  await expect(viewer).toHaveURL(url)
   await expect(
     viewer.getByRole('heading', { name: 'Quarto compartilhado do Samuel' }),
   ).toBeVisible()

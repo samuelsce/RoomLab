@@ -11,6 +11,7 @@ import {
   Share2,
 } from 'lucide-react'
 import { Brand } from '../components/Brand'
+import { SectionLink } from '../components/SectionLink'
 import { RoomPreview } from '../features/room3d/RoomPreview'
 import type { SceneName } from '../features/editor/scenes'
 
@@ -74,13 +75,15 @@ export function Home() {
         <Brand />
         <nav aria-label="Navegação principal">
           <Link to="/setups">Meus setups</Link>
-          <a href="#examples">Os ambientes</a>
+          <SectionLink className="environment-link" targetId="examples">
+            Os ambientes
+          </SectionLink>
           <Link to="/editor" className="button button-small">
             Abrir editor <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         </nav>
       </header>
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         <section className="studio-hero">
           <div className="studio-copy">
             <h1>
@@ -138,6 +141,7 @@ export function Home() {
         <section
           className="environment-story"
           id="examples"
+          tabIndex={-1}
           aria-labelledby="environment-heading"
         >
           <div className="environment-copy" key={selected}>

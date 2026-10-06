@@ -80,7 +80,7 @@ function SharedViewer({ token }: { token: string }) {
           Início
         </Link>
       </header>
-      <main id="main-content" className="shared-page">
+      <main id="main-content" className="shared-page" tabIndex={-1}>
         {error ? (
           <div className="shared-error">
             <h1>Não foi possível abrir este quarto.</h1>

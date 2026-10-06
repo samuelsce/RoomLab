@@ -4,6 +4,7 @@ import { Home } from './pages/Home'
 import { Editor } from './pages/Editor'
 import { Setups } from './pages/Setups'
 import { SharedSetup } from './pages/SharedSetup'
+import { SectionLink } from './components/SectionLink'
 
 export function App() {
   const location = useLocation()
@@ -16,13 +17,17 @@ export function App() {
           : location.pathname === '/setup'
             ? 'Quarto compartilhado | RoomLab'
             : 'RoomLab | monte seu setup'
-    if (!location.hash) window.scrollTo(0, 0)
+    if (location.hash) {
+      const target = document.getElementById(location.hash.slice(1))
+      target?.scrollIntoView({ block: 'start' })
+      target?.focus({ preventScroll: true })
+    } else window.scrollTo(0, 0)
   }, [location.pathname, location.search, location.hash])
   return (
     <>
-      <a className="skip-link" href="#main-content">
+      <SectionLink className="skip-link" targetId="main-content">
         Pular para o conteúdo
-      </a>
+      </SectionLink>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/editor" element={<Editor />} />
@@ -31,7 +36,7 @@ export function App() {
         <Route
           path="*"
           element={
-            <main id="main-content" className="not-found">
+            <main id="main-content" className="not-found" tabIndex={-1}>
               <h1>Esse quarto não foi encontrado.</h1>
               <p>Volte ao início para explorar os exemplos do RoomLab.</p>
               <Link className="button button-primary" to="/">

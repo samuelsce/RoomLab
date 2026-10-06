@@ -1,5 +1,44 @@
 import { expect, test } from '@playwright/test'
 
+test('same-page links preserve Pages routes, focus their targets and keep an unsaved editor intact', async ({
+  page,
+}) => {
+  await page.goto('./')
+  const homeUrl = page.url()
+  const environments = page.getByRole('link', {
+    name: 'Os ambientes',
+    exact: true,
+  })
+  if (await environments.isVisible()) {
+    await environments.click()
+    await expect(page.locator('#examples')).toBeFocused()
+    await expect(page).toHaveURL(homeUrl)
+    await page.evaluate(() => window.scrollTo(0, 0))
+    await environments.click()
+    await expect(page.locator('#examples')).toBeFocused()
+  }
+  await page.getByRole('link', { name: 'Pular para o conteúdo' }).focus()
+  await page.keyboard.press('Enter')
+  await expect(page.locator('#main-content')).toBeFocused()
+  await expect(page).toHaveURL(homeUrl)
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Seu quarto.Seu universo.',
+  )
+  await page.goto('./#/editor?scene=empty')
+  await page
+    .getByRole('button', { name: 'Adicionar mesa', exact: true })
+    .click()
+  await page.getByLabel('Nome do setup').fill('Rascunho intacto')
+  const editorUrl = page.url()
+  await page.getByRole('link', { name: 'Pular para o conteúdo' }).focus()
+  await page.keyboard.press('Enter')
+  await expect(page.locator('#main-content')).toBeFocused()
+  await expect(page).toHaveURL(editorUrl)
+  await expect(page.getByLabel('Nome do setup')).toHaveValue('Rascunho intacto')
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+  await expect(page.getByText('1 objeto', { exact: true })).toBeVisible()
+})
+
 test('built Pages app reloads hash routes and opens a share without a server or local data', async ({
   page,
   browser,

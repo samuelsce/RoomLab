@@ -89,7 +89,7 @@ function EditorLoader({
   })
   if (loaded.error)
     return (
-      <main id="main-content" className="not-found">
+      <main id="main-content" className="not-found" tabIndex={-1}>
         <h1>Não foi possível abrir o setup.</h1>
         <p>{loaded.error}</p>
         <Link className="button button-primary" to="/setups">
@@ -351,7 +351,7 @@ function EditorWorkspace({
           <span>Meus setups</span>
         </Link>
       </header>
-      <main id="main-content" className="editor-main">
+      <main id="main-content" className="editor-main" tabIndex={-1}>
         <div className="editor-notice">
           <Info size={17} aria-hidden="true" />
           <p>

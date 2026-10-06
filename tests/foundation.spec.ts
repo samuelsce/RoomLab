@@ -123,6 +123,10 @@ test('narrow screen and reduced motion retain usable layout and keyboard entry',
     page.getByRole('link', { name: 'Pular para o conteúdo' }),
   ).toBeFocused()
   await page.keyboard.press('Enter')
+  await expect(page.locator('#main-content')).toBeFocused()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Seu quarto.Seu universo.',
+  )
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,

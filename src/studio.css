@@ -500,7 +500,7 @@
   .home-redesign .home-header nav {
     gap: 12px;
   }
-  .home-redesign .home-header nav a[href='#examples'] {
+  .home-redesign .home-header nav .environment-link {
     display: none;
   }
   .home-redesign .home-header .button {
