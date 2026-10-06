@@ -31,6 +31,8 @@ O script `npm run capture:preview` usa o servidor na porta 5173 e cobre o fluxo 
 
 Revise capturas antes de versioná-las. As imagens em `docs/screenshots` servem como evidência visual e apresentação do README; não são builds da aplicação.
 
+`node scripts/capture-composition.mjs` registra o painel de acabamentos e o agrupamento nos perfis desktop, tablet e celular. Também aceita `ROOMLAB_PREVIEW_URL` e utiliza a porta 5174 por padrão.
+
 ## Branches, commits e publicação
 
 1. Atualize `main` e crie uma branch com escopo claro, como `feat/...`, `fix/...` ou `docs/...`.

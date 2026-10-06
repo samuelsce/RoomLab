@@ -12,7 +12,7 @@ Projeto de portfólio front-end de [@samuelsce](https://github.com/samuelsce), c
 
 1. Abra o [quarto gamer](https://samuelsce.github.io/RoomLab/#/editor?scene=gamer), clique numa peça para editar, gire a câmera e experimente a luz natural/noturna.
 2. Escolha **Planta 2D**, selecione uma peça e arraste, gire ou altere a cor pelo painel de propriedades.
-3. Adicione um objeto pelo catálogo. Use **Desfazer** para comparar com a composição anterior.
+3. Selecione a mesa e ative **Mover com equipamentos**. Mova ou gire a bancada inteira; em **Personalizar ambiente**, experimente tintas e pisos. Use **Desfazer** para comparar.
 4. Dê um nome ao quarto, clique em **Salvar** e reabra em **Meus setups**.
 5. Use **Compartilhar → Gerar link** e abra o endereço em outro navegador. O quarto pode ser visto sem login e copiado para edição.
 
@@ -24,6 +24,8 @@ Para avaliar o código, comece pelo [guia de avaliação técnica](docs/AVALIACA
 - Catálogo de 13 peças, busca sem distinção de acentos e filtros por categoria.
 - Adição por clique/toque ou arrasto na planta, seleção, movimento, rotação, tamanho e cores.
 - Duplicação, exclusão, camadas, grade e histórico de desfazer/refazer por ação.
+- Equipamentos vinculados à mesa acompanham seu movimento e rotação, com limites para o conjunto e desvinculação individual.
+- Seis tintas e quatro pisos, com acabamentos nas duas vistas, no histórico, no salvamento e nos links.
 - Visualização 3D com mobiliário volumétrico, seleção por clique/toque, destaque da peça, materiais, sombras, câmera e controles de luz.
 - Interface responsiva com propriedades em painel inferior, atalhos protegidos durante diálogos, foco visível, mensagens de estado e preferência por movimento reduzido.
 - Biblioteca local: nomear, salvar, reabrir, duplicar e excluir, com validação e detecção de versões desatualizadas entre abas.
@@ -35,6 +37,8 @@ Para avaliar o código, comece pelo [guia de avaliação técnica](docs/AVALIACA
 | --- | --- | --- |
 | Arrastar com zoom e manter peças giradas dentro do quarto | Conversão de coordenadas e limites geométricos independentes da tela | [geometry.ts](src/features/editor/geometry.ts), [RoomScene.tsx](src/features/editor/RoomScene.tsx) |
 | Desfazer um arrasto sem guardar cada movimento do ponteiro | Estado transitório do gesto e uma entrada de histórico ao concluir | [editorModel.ts](src/features/editor/editorModel.ts) |
+| Reorganizar a bancada sem perder a disposição dos equipamentos | Vínculos explícitos, transformação pelo centro da mesa e limites do conjunto | [grouping.ts](src/features/editor/grouping.ts), [surfaces.ts](src/features/editor/surfaces.ts) |
+| Personalizar o ambiente e reabrir a mesma composição | Acabamentos no documento e no histórico, com padrões para documentos anteriores | [appearance.ts](src/features/editor/appearance.ts), [guia da entrega](docs/AGRUPAMENTO-AMBIENTE.md) |
 | Exibir a mesma composição em duas vistas | Documento único com projeção da planta para o modelo 3D | [projection.ts](src/features/room3d/projection.ts), [models.ts](src/features/room3d/models.ts) |
 | Salvar sem perder dados quando o armazenamento falha | Validação de entrada, mensagens de erro e comparação de revisões | [storage.ts](src/features/setups/storage.ts) |
 | Compartilhar em uma hospedagem estática | JSON validado, gzip e base64url no endereço, sem servidor de aplicação | [codec.ts](src/features/sharing/codec.ts) |
@@ -77,9 +81,9 @@ npm run test:pages -- --workers=2
 npm run build
 ```
 
-A validação local da [entrega de seleção 3D](docs/SELECAO-3D.md) aprovou **30 testes unitários, 87 casos de navegador e 4 casos do build de Pages**. Nove casos adicionais são ignorados nos perfis em que não se aplicam. Os perfis de desktop, tablet e celular usam Chromium; não representam certificação em dispositivos físicos ou em todos os navegadores.
+A validação local da [entrega de agrupamento e ambiente](docs/AGRUPAMENTO-AMBIENTE.md) aprovou **37 testes unitários, 97 casos de navegador e 4 casos do build de Pages**. Onze casos adicionais são ignorados nos perfis em que não se aplicam. Os perfis de desktop, tablet e celular usam Chromium; não representam certificação em dispositivos físicos ou em todos os navegadores.
 
-O [workflow](.github/workflows/pages.yml) executa lint, formatação, testes e build antes de publicar. [Execução validada da entrega 3D](https://github.com/samuelsce/RoomLab/actions/runs/37417938419). `npm run test:live` verifica a demo pública, o 3D gamer, compartilhamento em sessão independente e cópia editável.
+O [workflow](.github/workflows/pages.yml) executa lint, formatação, testes e build antes de publicar. `npm run test:live` verifica a demo pública, o 3D gamer, acabamentos, vínculos, compartilhamento em sessão independente e cópia editável.
 
 ## Dados e limites
 
@@ -87,7 +91,7 @@ O salvamento é manual e local ao navegador. Limpar os dados do site remove a bi
 
 Um link contém o nome e a composição do quarto. Quem tiver o endereço completo pode abrir essa versão, e edições posteriores não modificam o link já gerado. Não há login, banco, sincronização entre dispositivos ou serviço de links curtos. O conteúdo compactado do link é limitado a 12.000 caracteres; JSON oferece uma alternativa para quartos maiores.
 
-O 3D é estilizado, e as dimensões usam unidades do desenho. A planta posiciona as peças; o 3D permite selecionar por clique/toque e editar pelas propriedades/lista. Luz e câmera são preferências temporárias de visualização. Sem suporte gráfico, a planta continua disponível. Veja os [limites e tradeoffs da arquitetura](docs/ARQUITETURA.md).
+O 3D é estilizado, e as dimensões usam unidades do desenho. A planta posiciona as peças; o 3D permite selecionar por clique/toque e editar pelas propriedades/lista. Tinta e piso são salvos; luz e câmera são preferências temporárias de visualização. O agrupamento permite sobreposições e não calcula colisões. Sem suporte gráfico, a planta continua disponível. Veja os [limites e tradeoffs da arquitetura](docs/ARQUITETURA.md).
 
 ## Documentação
 

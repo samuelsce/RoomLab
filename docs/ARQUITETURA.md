@@ -4,12 +4,12 @@ O RoomLab é uma aplicação front-end hospedada no GitHub Pages. O navegador ma
 
 ## Documento único, duas representações
 
-Cada objeto tem `id`, `kind`, `x`, `y`, `w`, `h`, `color` e `rotation`. A ordem da lista determina as camadas da planta. O modelo não salva coordenadas em pixels da tela, elementos DOM ou instâncias do Three.js.
+Cada objeto tem `id`, `kind`, `x`, `y`, `w`, `h`, `color` e `rotation`. O campo opcional `attachedTo` vincula equipamentos à mesa. O documento também contém `appearance`, com tinta e acabamento do piso. A ordem da lista determina as camadas da planta. O modelo não salva coordenadas em pixels da tela, elementos DOM ou instâncias do Three.js.
 
 ```mermaid
 flowchart LR
   A[Catálogo e propriedades] --> B[Reducer do editor]
-  B --> C[Lista de objetos]
+  B --> C[Objetos e acabamentos]
   C --> D[Planta SVG]
   C --> E[Projeção e quarto 3D]
   C --> F[Salvar localmente e exportar JSON]
@@ -39,13 +39,17 @@ scripts/                  Capturas, build de Pages e verificação pública
 
 ## Edição, coordenadas e histórico
 
-[`useRoomEditor`](../src/features/editor/useRoomEditor.ts) reúne o reducer e as ações usadas pela interface. [`editorModel.ts`](../src/features/editor/editorModel.ts) mantém objetos atuais, passado, futuro e o início de um gesto.
+[`useRoomEditor`](../src/features/editor/useRoomEditor.ts) reúne o reducer e as ações usadas pela interface. [`editorModel.ts`](../src/features/editor/editorModel.ts) mantém snapshots de objetos e acabamentos, passado, futuro e o início de um gesto. Selecionar o acabamento ativo não cria histórico nem limpa o futuro.
 
 Durante um arrasto, ações de preview atualizam a representação. Ao concluir, o gesto gera uma entrada no histórico; ao cancelar, o estado inicial é restaurado. Uma nova edição limpa o futuro. O histórico guarda até 50 ações.
 
 [`RoomScene.tsx`](../src/features/editor/RoomScene.tsx) transforma as coordenadas do ponteiro para o espaço do SVG com a matriz inversa da tela. Isso permite que o movimento acompanhe o cursor mesmo com zoom ou layout responsivo. Pointer capture mantém o gesto ao sair da peça. Mouse, toque e teclado usam as mesmas regras geométricas.
 
 [`geometry.ts`](../src/features/editor/geometry.ts) calcula limites por tipo, dimensões após rotação, posição dentro do quarto e alinhamento à grade. Essas funções não dependem de React ou do DOM e são verificadas por testes unitários.
+
+[`surfaces.ts`](../src/features/editor/surfaces.ts) compartilha a detecção de apoio entre agrupamento e projeção. [`grouping.ts`](../src/features/editor/grouping.ts) move e gira equipamentos vinculados, preservando posições relativas e considerando os limites do conjunto. Uma rotação que não cabe é recusada; redimensionamento altera apenas a mesa. Sair do tampo ou excluir a mesa libera vínculos, e desfazer restaura a composição. Não há grupos aninhados. Veja [AGRUPAMENTO-AMBIENTE.md](AGRUPAMENTO-AMBIENTE.md).
+
+[`appearance.ts`](../src/features/editor/appearance.ts) define tintas, pisos e padrões por ambiente. O diálogo mostra a escolha no quarto imediatamente. Alterações pendentes, backups, links e previews incluem os acabamentos. Documentos anteriores sem esses campos usam os padrões originais da cena.
 
 ## Navegação, foco e telas compactas
 
@@ -73,7 +77,7 @@ Um destaque de cantos usa os limites do volume e recursos gráficos reutilizáve
 
 ## Persistência e falhas
 
-[`storage.ts`](../src/features/setups/storage.ts) acessa `localStorage` por uma interface pequena. O documento utiliza a versão 1 e passa por validação: estrutura, tipos conhecidos, números finitos, cores, IDs únicos, datas e limites. Campos desconhecidos não são reconstruídos no documento validado.
+[`storage.ts`](../src/features/setups/storage.ts) acessa `localStorage` por uma interface pequena. O documento utiliza a versão 1 e passa por validação: estrutura, tipos conhecidos, números finitos, cores, pisos, referências de agrupamento, IDs únicos, datas e limites. `appearance` e `attachedTo` são opcionais para preservar documentos anteriores. Campos desconhecidos não são reconstruídos no documento validado.
 
 Dados inválidos não são silenciosamente substituídos por uma biblioteca vazia. Bloqueios de acesso e quota insuficiente geram mensagens e preservam a composição aberta. O editor avisa ao sair com alterações pendentes.
 
@@ -81,7 +85,7 @@ Uma revisão identifica cada versão salva. Operações com uma revisão desatua
 
 ## Compartilhamento estático
 
-[`document.ts`](../src/features/sharing/document.ts) define a cópia pública: versão, nome, ambiente e objetos. Metadados da biblioteca, revisão, seleção e histórico não são incluídos.
+[`document.ts`](../src/features/sharing/document.ts) define a cópia pública: versão, nome, ambiente, objetos, vínculos e acabamentos. Metadados da biblioteca, revisão, seleção e histórico não são incluídos.
 
 [`codec.ts`](../src/features/sharing/codec.ts) valida, serializa, compacta com gzip e codifica em base64url. No Pages, o conteúdo fica após `#`, em `/RoomLab/#/setup?data=v1...`. O navegador recebe o arquivo estático e decodifica o documento localmente. A requisição HTTP inicial não inclui o fragmento do endereço.
 
