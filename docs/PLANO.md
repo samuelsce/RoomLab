@@ -22,7 +22,9 @@ Critério de conclusão: montar uma cena com 20 objetos; transformações corret
 
 ### 3. Persistência local
 
-Salvar automaticamente, nomear setup, listar salvos, reabrir, importar/exportar JSON validado e exportar PNG. Cena inicial vazia e exemplos prontos. Indicadores “Salvando”, “Salvo neste navegador” e falha de salvamento.
+Nomear setup, salvar localmente, listar salvos, reabrir, importar/exportar JSON validado e exportar PNG. Cena inicial vazia e exemplos prontos. Indicadores de alterações pendentes, “Salvo neste navegador” e falha de salvamento.
+
+Decisão da terceira entrega: salvamento explícito pelo botão Salvar. A gravação local é síncrona, então não há estado artificial de carregamento. O plano inicial previa salvamento automático; nesta versão, o usuário escolhe quando atualizar o documento, com aviso ao sair com edições pendentes. Ver justificativa e limites em [ENTREGA-03.md](ENTREGA-03.md).
 
 Critério de conclusão: recarregar preserva a cena; dados inválidos não derrubam o aplicativo; falhas de armazenamento são comunicadas; exportação não inclui alças de seleção. Salvamento local não promete disponibilidade em outros dispositivos.
 
@@ -88,4 +90,4 @@ A primeira entrega foi implementada em `feat/app-foundation`, com home, estrutur
 
 A segunda entrega está implementada em `feat/room-editor`, com adição, manipulação, cores, camadas e histórico. Foram mantidos SVG nativo e `useReducer`, conforme a decisão e as limitações em [ENTREGA-02.md](ENTREGA-02.md).
 
-Próximo passo: `feat/local-setups`, com persistência local, nomes, biblioteca de salvos e exportação. Links públicos serão implementados depois dessa etapa.
+A terceira entrega está implementada em `feat/local-setups`, com persistência local, nomes, biblioteca, backups JSON e exportação PNG. Próximo passo: `feat/setup-sharing`, com snapshots públicos e visualização compartilhada. Essa etapa requer definir o serviço de armazenamento e a hospedagem.

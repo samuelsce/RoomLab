@@ -25,7 +25,7 @@ Fluxo: criar branch → implementar uma responsabilidade → verificar → revis
 
 Branches isolam mudanças, mas não impedem todos os erros. No GitHub, configurar regra de proteção da main: exigir pull request e checks de lint, tipos, testes essenciais e build. A disponibilidade de regras depende do repositório e da conta. Essa proteção não está configurada só porque as branches locais existem.
 
-Não há remoto configurado nesta fase. Quando for informado/criado o repositório GitHub, conectar, enviar as branches e configurar o fluxo de PRs. Nunca versionar `.env` com credenciais; manter apenas exemplo com nomes de variáveis.
+O remoto está conectado a [samuelsce/RoomLab](https://github.com/samuelsce/RoomLab). As entregas são enviadas em branches específicas; a main ainda mantém a base inicial. Nunca versionar `.env` com credenciais; manter apenas exemplo com nomes de variáveis.
 
 ## O que aprender em cada entrega
 
@@ -44,4 +44,4 @@ Os exercícios acompanham entregas concretas, sem bloquear o desenvolvimento. Re
 
 ## Situação desta entrega
 
-Planejamento e duas entregas documentados. A fundação está em `feat/app-foundation` e o editor funcional em `feat/room-editor`; detalhes em [ENTREGA-01.md](ENTREGA-01.md) e [ENTREGA-02.md](ENTREGA-02.md). Persistência, compartilhamento, CI e hospedagem permanecem como próximas etapas. A direção da skill `frontend-design` foi mantida e revisada por screenshots.
+Planejamento e três entregas documentados. A fundação está em `feat/app-foundation`, o editor funcional em `feat/room-editor` e a persistência em `feat/local-setups`. Detalhes em [ENTREGA-01.md](ENTREGA-01.md), [ENTREGA-02.md](ENTREGA-02.md) e [ENTREGA-03.md](ENTREGA-03.md). Compartilhamento, CI e hospedagem permanecem como próximas etapas. A direção da skill `frontend-design` foi mantida e revisada por screenshots.
