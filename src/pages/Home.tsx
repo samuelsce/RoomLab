@@ -63,9 +63,9 @@ export function Home() {
               </Link>
             </div>
             <p className="prototype-caption">
-              Primeira versão: explore o visual e os objetos.
+              Adicione peças, experimente cores e organize o quarto.
               <br />
-              Movimento e salvamento chegam nas próximas etapas.
+              Salvamento disponível na próxima entrega.
             </p>
           </div>
           <div className="hero-room">

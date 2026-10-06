@@ -8,8 +8,8 @@ export function App() {
   useEffect(() => {
     document.title =
       location.pathname === '/editor'
-        ? 'Editor — RoomLab'
-        : 'RoomLab — monte seu setup'
+        ? 'Editor | RoomLab'
+        : 'RoomLab | monte seu setup'
     if (!location.hash) window.scrollTo(0, 0)
   }, [location.pathname, location.search, location.hash])
   return (
