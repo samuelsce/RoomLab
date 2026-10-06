@@ -151,18 +151,18 @@ export function editorReducer(
 
 const defaultSizes: Record<ObjectKind, [number, number]> = {
   bed: [164, 231],
-  desk: [230, 120],
-  'round-desk': [175, 110],
-  chair: [100, 95],
-  monitor: [105, 75],
-  'dual-monitor': [165, 80],
-  pc: [65, 85],
-  keyboard: [90, 42],
-  lamp: [65, 75],
-  plant: [95, 95],
+  desk: [250, 110],
+  'round-desk': [175, 90],
+  chair: [95, 95],
+  monitor: [105, 42],
+  'dual-monitor': [160, 45],
+  pc: [48, 68],
+  keyboard: [75, 28],
+  lamp: [42, 42],
+  plant: [85, 90],
   rug: [260, 170],
   frame: [65, 80],
-  shelf: [150, 80],
+  shelf: [150, 55],
 }
 
 export function createObject(

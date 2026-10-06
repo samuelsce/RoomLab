@@ -1,67 +1,8 @@
 import * as THREE from 'three'
-import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js'
+import { box, cylinder, glow, material, tabletop } from './primitives'
+import { buildChair } from './chair'
 import type { SceneName, SceneObject } from '../editor/scenes'
 import { projectObject } from './projection'
-
-const material = (color: string, roughness = 0.7, metalness = 0) =>
-  new THREE.MeshStandardMaterial({ color, roughness, metalness })
-
-function box(
-  parent: THREE.Object3D,
-  size: number[],
-  position: number[],
-  color: string,
-  roughness = 0.7,
-) {
-  const dimensions = size as [number, number, number]
-  const geometry =
-    Math.min(...size) > 0.06
-      ? new RoundedBoxGeometry(...dimensions, 2, Math.min(...size) * 0.14)
-      : new THREE.BoxGeometry(...dimensions)
-  const mesh: THREE.Mesh<THREE.BoxGeometry, THREE.Material> = new THREE.Mesh(
-    geometry,
-    material(color, roughness),
-  )
-  mesh.position.set(...(position as [number, number, number]))
-  mesh.castShadow = true
-  mesh.receiveShadow = true
-  parent.add(mesh)
-  return mesh
-}
-function cylinder(
-  parent: THREE.Object3D,
-  radius: number,
-  height: number,
-  position: number[],
-  color: string,
-  top = radius,
-) {
-  const mesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(top, radius, height, 20),
-    material(color),
-  )
-  mesh.position.set(...(position as [number, number, number]))
-  mesh.castShadow = true
-  mesh.receiveShadow = true
-  parent.add(mesh)
-  return mesh
-}
-function glow(
-  parent: THREE.Object3D,
-  size: number[],
-  position: number[],
-  color: string,
-) {
-  const mesh = box(parent, size, position, color)
-  mesh.material.dispose()
-  mesh.material = new THREE.MeshStandardMaterial({
-    color,
-    emissive: color,
-    emissiveIntensity: 2,
-    roughness: 0.3,
-  })
-  return mesh
-}
 
 function screenTexture(gamer: boolean) {
   const canvas = document.createElement('canvas')
@@ -178,7 +119,8 @@ export function buildRoom(
     switch (object.kind) {
       case 'desk':
       case 'round-desk': {
-        box(group, [w, 0.09, d], [0, 0.81, 0], c, 0.48)
+        const compact = object.kind === 'round-desk'
+        tabletop(group, w, d, c, compact)
         for (const x of [-w * 0.41, w * 0.41])
           for (const z of [-d * 0.37, d * 0.37])
             box(
@@ -204,14 +146,29 @@ export function buildRoom(
       case 'monitor':
       case 'dual-monitor': {
         const count = object.kind === 'dual-monitor' ? 2 : 1
-        const sw = (w / count) * 0.93
+        const sw = (w / count) * 0.94
+        const sh = sw / (16 / 9)
+        const stand = Math.min(0.24, sw * 0.25)
+        const centerY = stand + sh / 2
+        const thickness = Math.min(0.065, sw * 0.055)
         for (let i = 0; i < count; i++) {
-          const x = count === 1 ? 0 : (i - 0.5) * w * 0.51
-          box(group, [sw, 0.57, 0.065], [x, 0.53, -d * 0.17], c, 0.3)
-          box(group, [0.055, 0.24, 0.055], [x, 0.17, -d * 0.17], dark)
-          box(group, [sw * 0.4, 0.027, d * 0.43], [x, 0.015, 0], dark, 0.3)
+          const x = count === 1 ? 0 : (i - 0.5) * w * 0.5
+          box(
+            group,
+            [sw * 1.04, sh + sw * 0.04, thickness],
+            [x, centerY, -d * 0.17],
+            c,
+            0.3,
+          )
+          box(
+            group,
+            [0.04, stand + sh * 0.2, 0.04],
+            [x, (stand + sh * 0.2) / 2, -d * 0.17],
+            dark,
+          )
+          box(group, [sw * 0.38, 0.024, d * 0.7], [x, 0.012, 0], dark, 0.3)
           const screen = new THREE.Mesh(
-            new THREE.PlaneGeometry(sw * 0.92, 0.49),
+            new THREE.PlaneGeometry(sw, sh),
             new THREE.MeshStandardMaterial({
               map: texture,
               emissiveMap: texture,
@@ -220,17 +177,35 @@ export function buildRoom(
               roughness: 0.4,
             }),
           )
-          screen.position.set(x, 0.54, -d * 0.17 + 0.034)
+          screen.position.set(x, centerY, -d * 0.17 + thickness / 2 + 0.001)
           group.add(screen)
         }
         break
       }
       case 'pc': {
-        box(group, [w * 0.86, 0.74, d * 0.86], [0, 0.37, 0], c, 0.35)
+        const height = d * 1.05
+        // Open chassis on the glazed side so the glass reveals components.
+        box(group, [w * 0.86, 0.045, d * 0.86], [0, 0.024, 0], c, 0.35)
+        box(group, [w * 0.86, 0.045, d * 0.86], [0, height - 0.023, 0], c, 0.35)
+        box(
+          group,
+          [0.035, height, d * 0.86],
+          [w * 0.41, height / 2, 0],
+          c,
+          0.35,
+        )
+        box(
+          group,
+          [w * 0.86, height, 0.04],
+          [0, height / 2, -d * 0.41],
+          c,
+          0.35,
+        )
+        box(group, [w * 0.86, height, 0.035], [0, height / 2, d * 0.41], dark)
         const pane = box(
           group,
-          [0.01, 0.62, d * 0.69],
-          [w * 0.44, 0.38, 0],
+          [0.01, height - 0.08, d * 0.74],
+          [-w * 0.44, height / 2, 0],
           '#7993ac',
           0.1,
         )
@@ -242,10 +217,32 @@ export function buildRoom(
           roughness: 0.05,
           metalness: 0.35,
         })
-        box(group, [0.028, 0.5, d * 0.5], [w * 0.36, 0.34, 0], '#141e2c')
+        box(
+          group,
+          [0.028, height * 0.73, d * 0.6],
+          [w * 0.32, height * 0.52, 0],
+          '#141e2c',
+        )
+        box(
+          group,
+          [w * 0.65, height * 0.11, d * 0.45],
+          [0, height * 0.37, 0],
+          '#42516a',
+        )
+        box(
+          group,
+          [w * 0.65, height * 0.17, d * 0.75],
+          [0, height * 0.13, 0],
+          dark,
+        )
         for (let i = 0; i < 3; i++) {
           const fan = new THREE.Mesh(
-            new THREE.TorusGeometry(Math.min(w * 0.24, 0.105), 0.014, 8, 24),
+            new THREE.TorusGeometry(
+              Math.min(w * 0.24, height * 0.12),
+              0.012,
+              8,
+              24,
+            ),
             new THREE.MeshStandardMaterial({
               color: gamer ? ['#59dcd6', '#927cf6', '#df85ae'][i] : '#7798b9',
               emissive: gamer
@@ -254,8 +251,16 @@ export function buildRoom(
               emissiveIntensity: 1.5,
             }),
           )
-          fan.position.set(0, 0.15 + i * 0.21, d * 0.435)
+          fan.position.set(0, height * (0.19 + i * 0.3), d * 0.435)
           group.add(fan)
+          const hub = cylinder(
+            group,
+            w * 0.055,
+            0.008,
+            [0, fan.position.y, d * 0.438],
+            '#68758a',
+          )
+          hub.rotation.x = Math.PI / 2
         }
         break
       }
@@ -274,73 +279,28 @@ export function buildRoom(
         break
       }
       case 'chair': {
-        cylinder(group, 0.06, 0.42, [0, 0.25, 0], '#59606a')
-        box(group, [w * 0.68, 0.12, d * 0.57], [0, 0.51, 0], c, 0.95)
-        box(
-          group,
-          [w * 0.62, gamer ? 0.82 : 0.64, 0.13],
-          [0, gamer ? 0.95 : 0.89, d * 0.29],
-          c,
-          0.95,
-        )
-        box(
-          group,
-          [w * 0.45, 0.13, 0.16],
-          [0, 1.27, d * 0.29],
-          gamer ? '#141e2c' : c,
-        )
-        for (const x of [-w * 0.4, w * 0.4]) {
-          box(group, [0.06, 0.26, 0.06], [x, 0.51, 0], dark)
-          box(group, [0.12, 0.05, d * 0.4], [x, 0.66, 0], dark)
-          if (gamer) {
-            box(
-              group,
-              [0.026, 0.66, 0.028],
-              [x * 0.72, 0.95, d * 0.215],
-              '#59dcd6',
-            )
-            box(
-              group,
-              [0.026, 0.66, 0.028],
-              [x * 0.72, 0.95, d * 0.365],
-              '#59dcd6',
-            )
-          }
-        }
-        for (let i = 0; i < 5; i++) {
-          const leg = box(
-            group,
-            [0.06, 0.04, w * 0.43],
-            [0, 0.08, w * 0.2],
-            dark,
-          )
-          leg.geometry.translate(0, 0, -w * 0.2)
-          leg.rotation.y = (i * Math.PI * 2) / 5
-          leg.position.set(
-            Math.sin((i * Math.PI * 2) / 5) * w * 0.2,
-            0.08,
-            Math.cos((i * Math.PI * 2) / 5) * w * 0.2,
-          )
-          cylinder(
-            group,
-            0.055,
-            0.06,
-            [
-              Math.sin((i * Math.PI * 2) / 5) * w * 0.4,
-              0.045,
-              Math.cos((i * Math.PI * 2) / 5) * w * 0.4,
-            ],
-            dark,
-          )
-        }
+        buildChair(group, w, d, c, gamer)
         break
       }
       case 'lamp': {
+        const height = Math.min(w, d) * 1.4
         cylinder(group, w * 0.3, 0.035, [0, 0.02, 0], c)
-        cylinder(group, 0.018, 0.55, [0, 0.3, 0], c)
-        const shade = cylinder(group, w * 0.28, 0.2, [0, 0.62, 0], c, w * 0.12)
+        cylinder(group, 0.018, height * 0.8, [0, height * 0.4, 0], c)
+        const shade = cylinder(
+          group,
+          w * 0.28,
+          height * 0.3,
+          [0, height * 0.85, 0],
+          c,
+          w * 0.12,
+        )
         shade.rotation.z = -0.2
-        glow(group, [w * 0.28, 0.012, d * 0.24], [0, 0.53, 0.02], '#ffda9c')
+        glow(
+          group,
+          [w * 0.28, 0.012, d * 0.24],
+          [0, height * 0.71, 0.02],
+          '#ffda9c',
+        )
         break
       }
       case 'plant': {
@@ -398,46 +358,75 @@ export function buildRoom(
         break
       }
       case 'frame': {
+        const height = w * 0.79
         box(
           group,
-          [w, 0.67, 0.055],
+          [w, height, 0.055],
           [0, 1.88, 0],
           gamer ? '#192639' : '#927754',
         )
         box(
           group,
-          [w * 0.87, 0.56, 0.012],
+          [w * 0.87, height * 0.84, 0.012],
           [0, 1.88, 0.035],
           gamer ? '#24334a' : '#f5eee2',
         )
-        const art = cylinder(group, w * 0.19, 0.012, [0, 1.93, 0.05], c)
+        const art = cylinder(
+          group,
+          w * 0.19,
+          0.012,
+          [0, 1.88 + height * 0.075, 0.05],
+          c,
+        )
         art.rotation.x = Math.PI / 2
         box(
           group,
-          [w * 0.32, 0.13, 0.013],
-          [w * 0.12, 1.7, 0.05],
+          [w * 0.32, height * 0.19, 0.013],
+          [w * 0.12, 1.88 - height * 0.27, 0.05],
           gamer ? '#927cf6' : '#658571',
         )
         break
       }
       case 'shelf': {
-        box(group, [w, 1.02, d * 0.78], [0, 0.51, 0], c)
-        for (let row = 0; row < 2; row++) {
+        const height = Math.min(1.1, w * 0.7)
+        box(group, [w, height, 0.035], [0, height / 2, -d * 0.4], c)
+        for (const x of [-w * 0.48, w * 0.48])
+          box(group, [0.045, height, d * 0.82], [x, height / 2, 0], c)
+        for (let row = 0; row < 3; row++)
           box(
             group,
-            [w * 0.89, 0.35, 0.015],
-            [0, 0.25 + row * 0.48, d * 0.399],
-            gamer ? '#182638' : '#816b53',
+            [w, 0.045, d * 0.85],
+            [0, 0.06 + (row * (height - 0.08)) / 2, 0],
+            c,
           )
-          for (let i = 0; i < 8; i++)
+        box(
+          group,
+          [0.035, height - 0.08, d * 0.8],
+          [w * 0.15, height / 2, 0],
+          c,
+        )
+        for (let row = 0; row < 2; row++) {
+          for (let i = 0; i < 7; i++) {
+            const bookHeight = height * (0.23 + (i % 3) * 0.025)
             box(
               group,
-              [0.07 + (i % 2) * 0.02, 0.2 + (i % 3) * 0.045, d * 0.3],
-              [-w * 0.39 + i * w * 0.085, 0.21 + row * 0.48, d * 0.29],
+              [w * 0.035, bookHeight, d * 0.58],
+              [
+                -w * 0.41 + i * w * 0.065,
+                0.083 + (row * (height - 0.08)) / 2 + bookHeight / 2,
+                0,
+              ],
               ['#65878d', '#dec9ac', '#9d7469', '#88987a'][i % 4],
             )
+          }
+          box(
+            group,
+            [w * 0.2, height * 0.17, d * 0.55],
+            [w * 0.31, 0.084 + (row * (height - 0.08)) / 2 + height * 0.085, 0],
+            gamer ? '#34425b' : '#e1d4c0',
+            0.9,
+          )
         }
-        box(group, [w * 1.02, 0.045, d * 0.83], [0, 1.04, 0], c)
         break
       }
       case 'bed': {
