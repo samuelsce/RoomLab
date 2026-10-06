@@ -83,7 +83,7 @@ Princípios: a cena é o único elemento de destaque; objetos no catálogo apare
 - Nada de palavras isoladas em outra cor no título, rótulos em caixa alta, numeração decorativa ou entradas animadas em todas as seções.
 - O risco restante é a vista superior parecer uma planta técnica. A primeira composição precisa mostrar que mesa, monitor e plantas são reconhecíveis e que personalizar muda visivelmente o resultado. Se isso falhar, revisar a representação antes das interações completas.
 
-Esta revisão conclui a fase de planejamento da skill. A construção será seguida por screenshots de desktop/mobile e crítica visual sobre hierarquia, legibilidade e decoração dispensável. Ainda não há interface implementada ou screenshots validados.
+Esta revisão concluiu a fase de planejamento da skill. A primeira entrega foi construída e revisada com screenshots de desktop/mobile; resultados e limitações em [ENTREGA-01.md](ENTREGA-01.md). A avaliação visual continua aberta ao autor do projeto antes da manipulação completa.
 
 ## Vocabulário da interface
 
