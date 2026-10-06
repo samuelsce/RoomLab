@@ -84,4 +84,6 @@ Antes de declarar desempenho, medir com uma cena de 50 objetos e registrar dispo
 
 ## Próxima etapa
 
-Criar `feat/app-foundation` a partir da base aprovada e entregar home + estrutura do editor + composição demonstrativa. Explicar componentes, props, tokens CSS e responsividade enquanto a etapa é construída. A escolha da vista 2D é uma proposta reversível até a validação visual.
+A primeira entrega foi implementada em `feat/app-foundation`, com home, estrutura do editor, composições e catálogo. Ver [ENTREGA-01.md](ENTREGA-01.md). A validação visual foi feita por screenshots; a avaliação do autor do projeto pode orientar ajustes antes da próxima etapa.
+
+Próximo passo: `feat/room-editor`, com inclusão e movimento de objetos e conversão de coordenadas. A representação atual é ilustrada em 2D e pode ser revisada antes da manipulação completa.
