@@ -28,13 +28,13 @@ Decisão da terceira entrega: salvamento explícito pelo botão Salvar. A grava�
 
 Critério de conclusão: recarregar preserva a cena; dados inválidos não derrubam o aplicativo; falhas de armazenamento são comunicadas; exportação não inclui alças de seleção. Salvamento local não promete disponibilidade em outros dispositivos.
 
-### 4. Compartilhamento real
+### 4. Compartilhamento e publicação no GitHub
 
-Publicar snapshot imutável e abrir `/setup/:id` em modo de visualização. “Editar uma cópia” cria um documento independente. Tratar link inexistente, carregamento e indisponibilidade do serviço.
+Gerar uma cópia fixa e abrir em modo de visualização. “Editar uma cópia” cria um documento local independente. Tratar carregamento, link incompleto, versão desconhecida e dados inválidos.
 
-Um caminho curto como `/setup/a8f29` precisa de armazenamento acessível ao destinatário: localStorage não atende a esse requisito. Proposta: função de servidor com validação + banco gerenciado (Supabase é um candidato a avaliar nesta etapa). Limitar tamanho, quantidade de objetos e frequência de criação; manter segredos apenas no servidor. Sem login no escopo inicial, setups publicados serão acessíveis a quem tiver o link; avisar isso na publicação.
+Decisão revisada conforme preferência do autor por manter o projeto no GitHub: GitHub Pages e documento compactado no fragmento da URL. O link funciona sem banco e sem depender de localStorage. O destinatário recebe nome e composição; alterações posteriores no editor não modificam o endereço já gerado. Validação limita objetos, bytes descompactados e comprimento do token.
 
-Critério de conclusão: abrir o link em outro navegador/dispositivo mostra o snapshot publicado; alterações locais posteriores não o modificam. URL e domínio finais dependem da hospedagem, sem promessa de disponibilidade de `roomlab.app`.
+Um link curto como `/setup/a8f29` continuaria exigindo banco ou serviço de armazenamento. Esse formato ficou fora desta entrega. Critério de conclusão: abrir o endereço completo em uma sessão independente mostra a composição e permite salvar uma cópia. A interface será publicada em `samuelsce.github.io/RoomLab/`, com CI e sem merge direto na main. Ver [ENTREGA-04.md](ENTREGA-04.md).
 
 ### 5. Acabamento e portfólio
 
@@ -90,4 +90,4 @@ A primeira entrega foi implementada em `feat/app-foundation`, com home, estrutur
 
 A segunda entrega está implementada em `feat/room-editor`, com adição, manipulação, cores, camadas e histórico. Foram mantidos SVG nativo e `useReducer`, conforme a decisão e as limitações em [ENTREGA-02.md](ENTREGA-02.md).
 
-A terceira entrega está implementada em `feat/local-setups`, com persistência local, nomes, biblioteca, backups JSON e exportação PNG. Próximo passo: `feat/setup-sharing`, com snapshots públicos e visualização compartilhada. Essa etapa requer definir o serviço de armazenamento e a hospedagem.
+A terceira entrega está implementada em `feat/local-setups`, com persistência local, nomes, biblioteca, backups JSON e exportação PNG. A quarta entrega está em `feat/setup-sharing`, com links que carregam o documento e publicação pelo GitHub Pages. Próximo passo: `feat/portfolio-polish`, com revisão de acessibilidade, acabamento e material para apresentar o projeto. Integração das branches na main será feita pelo fluxo de revisão, mantendo os commits separados.

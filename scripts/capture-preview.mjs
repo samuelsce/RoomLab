@@ -34,6 +34,29 @@ try {
       path: `${directory}/setups-${name}.png`,
       fullPage: true,
     })
+    await page
+      .getByRole('link', {
+        name: 'Abrir Meu cantinho com plantas',
+        exact: true,
+      })
+      .click()
+    await page
+      .getByRole('button', { name: 'Compartilhar', exact: true })
+      .click()
+    await page.getByRole('button', { name: 'Gerar link', exact: true }).click()
+    const sharedUrl = await page.getByLabel('Link do quarto').inputValue()
+    await page.screenshot({
+      path: `${directory}/sharing-${name}.png`,
+      fullPage: true,
+    })
+    await page.goto(sharedUrl)
+    await page
+      .getByRole('heading', { name: 'Meu cantinho com plantas', exact: true })
+      .waitFor()
+    await page.screenshot({
+      path: `${directory}/shared-${name}.png`,
+      fullPage: true,
+    })
     await page.close()
   }
 } finally {
