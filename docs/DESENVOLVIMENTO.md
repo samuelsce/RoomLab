@@ -1,49 +1,55 @@
-# Desenvolvimento e aprendizado
+# Desenvolvimento do RoomLab
 
-## Acordo de trabalho
+A versão atual está em `main`. O [README](../README.md) apresenta instalação e demo; a [arquitetura](ARQUITETURA.md) descreve decisões e limites. O [índice de entregas](README.md) preserva os registros de aprendizado de cada etapa.
 
-Antes de cada etapa, explicar em português o resultado esperado, os arquivos envolvidos e a decisão técnica principal. Durante o trabalho, comunicar descobertas e mudanças relevantes. Ao terminar, mostrar o que mudou, como experimentar, como foi verificado e quais commits foram criados.
+## Ambiente
 
-Evitar travessões nas explicações, documentação nova e textos da interface, conforme preferência do autor.
+Use Node.js 22.12+ e npm. O workflow utiliza Node.js 24. Instale as dependências com `npm ci` para respeitar o lockfile e inicie `npm run dev`. O endereço padrão é `http://127.0.0.1:5173`; o Vite informa outra porta se ela estiver ocupada.
 
-Não transformar a entrega em uma aula sobre cada linha: concentrar explicações nos conceitos que permitem ao autor do portfólio entender, modificar e defender o projeto em entrevista.
+Sem variáveis adicionais, o desenvolvimento usa caminhos normais. `.env.example` documenta as configurações opcionais. Credenciais, banco e serviços externos não são necessários.
 
-## Branches e commits
+## Comandos
 
-O repositório começa com uma base mínima em `main`. O planejamento fica em `docs/project-planning`. Implementar cada etapa em sua branch e integrar apenas depois das verificações pertinentes. Separar commits por mudança compreensível, sem checkpoints quebrados ou commits artificiais por arquivo.
+| Comando | Finalidade |
+| --- | --- |
+| `npm run dev` | Servidor local com atualização durante a edição |
+| `npm run build` | Verificação de tipos e build em `dist` |
+| `npm run preview` | Servir o build localmente |
+| `npm run lint` | Regras de TypeScript, React e hooks |
+| `npm run typecheck` | Verificação de tipos sem gerar arquivos |
+| `npm run format:check` / `npm run format` | Conferir / aplicar formatação do código e configurações |
+| `npm run test:unit` | Regras de geometria, histórico, projeção, armazenamento e links |
+| `npm run test:e2e -- --workers=2` | Fluxos Chromium nos três perfis responsivos |
+| `npm run test:pages -- --workers=2` | Build com base `/RoomLab/` e rotas hash |
+| `npm run test:live` | Verificar a demo pública e compartilhamento entre sessões |
 
-| Etapa | Branch sugerida | Exemplos de commits |
-| --- | --- | --- |
-| Fundação | `feat/app-foundation` | `chore: configure React and TypeScript`; `feat: add landing page and editor layout` |
-| Catálogo e cena | `feat/room-editor` | `feat: add object catalog`; `feat: implement object selection and movement` |
-| Transformações | `feat/editor-transforms` | `feat: add rotation and resize controls`; `feat: add undo and redo history` |
-| Salvos | `feat/local-setups` | `feat: persist setups locally`; `feat: export setup image and document` |
-| Links | `feat/setup-sharing` | `feat: publish setup snapshots`; `feat: add shared setup viewer` |
-| Acabamento | `feat/portfolio-polish` | `fix: improve touch interactions`; `docs: add demo and architecture guide` |
+Antes dos testes de navegador, execute `npx playwright install chromium`. Os testes locais de aplicação e Pages utilizam portas 4173 e 4174. A saída regular fica em `test-results`; a de Pages fica em `test-results-pages`. Ambas são ignoradas pelo Git.
 
-Fluxo: criar branch → implementar uma responsabilidade → verificar → revisar diff → commit → concluir etapa → revisar entrega → integrar na main. Manter commits individuais ao integrar para preservar o histórico solicitado. Correções usam `fix/...` e não são feitas diretamente na main.
+## Capturas
 
-Branches isolam mudanças, mas não impedem todos os erros. No GitHub, configurar regra de proteção da main: exigir pull request e checks de lint, tipos, testes essenciais e build. A disponibilidade de regras depende do repositório e da conta. Essa proteção não está configurada só porque as branches locais existem.
+O script `npm run capture:preview` usa o servidor na porta 5173 e cobre o fluxo geral. Para a nova home e o editor gamer, mantenha um servidor na porta 5174 e execute `node scripts/capture-studio.mjs`. O endereço desse script pode ser alterado pela variável `ROOMLAB_PREVIEW_URL`.
 
-O remoto está conectado a [samuelsce/RoomLab](https://github.com/samuelsce/RoomLab). As entregas são enviadas em branches específicas; a main ainda mantém a base inicial. Nunca versionar `.env` com credenciais; manter apenas exemplo com nomes de variáveis.
+Revise capturas antes de versioná-las. As imagens em `docs/screenshots` servem como evidência visual e apresentação do README; não são builds da aplicação.
 
-## O que aprender em cada entrega
+## Branches, commits e publicação
 
-| Entrega | Conceitos | Exercício curto |
-| --- | --- | --- |
-| Fundação visual | Componentes, props, tokens, layout responsivo | Alterar um token e identificar quais componentes mudam |
-| Catálogo | Tipagem de dados, listas e estado | Adicionar um novo objeto ao catálogo |
-| Movimento | Eventos, coordenadas e conversão com zoom | Explicar por que posição não deve ser salva em pixels da tela |
-| Transformações | Geometria, validação e comandos | Ajustar o limite mínimo de um tipo de objeto |
-| Histórico | Estado transitório e persistente | Explicar por que um arrasto produz só uma ação de desfazer |
-| Persistência | Serialização, versões e falhas | Exportar um setup e reconhecer os campos do documento |
-| Compartilhamento | Cliente/servidor, snapshots e carregamento | Explicar por que localStorage não cria um link público |
-| Acabamento | Testes, acessibilidade e desempenho | Executar o fluxo só com teclado e descrever o resultado |
+1. Atualize `main` e crie uma branch com escopo claro, como `feat/...`, `fix/...` ou `docs/...`.
+2. Implemente mudanças por responsabilidade e faça commits compreensíveis. Preserve compatibilidade com documentos salvos e compartilhados.
+3. Verifique o comportamento afetado, revise o diff e abra um pull request para `main`.
+4. Aguarde os checks e revise problema, resultado, validação e limites antes de integrar.
 
-Os exercícios acompanham entregas concretas, sem bloquear o desenvolvimento. Registrar decisões relevantes com motivo e tradeoff, para servir de material de entrevista.
+O workflow roda em pull requests para `main` e valida antes de publicar pushes habilitados. O Pages utiliza `VITE_BASE_PATH=/RoomLab/` e `VITE_ROUTER_MODE=hash`. A publicação recebe os arquivos de `dist`. Alterações limitadas a `README.md` e `docs/**` não disparam publicação no push; os checks do pull request continuam aplicáveis.
 
-## Situação desta entrega
+A configuração de checks no workflow não equivale a uma regra de proteção de branch. Consulte as regras do repositório no GitHub para saber quais checks são obrigatórios para integração.
 
-Planejamento e quatro entregas documentados. A fundação está em `feat/app-foundation`, o editor funcional em `feat/room-editor`, a persistência em `feat/local-setups` e os links em `feat/setup-sharing`. Ver [ENTREGA-04.md](ENTREGA-04.md) para compartilhamento, workflow e publicação. A main permanece na base inicial. A publicação da branch de compartilhamento é permitida no ambiente github-pages, sem integrar código na main. A direção da skill `frontend-design` foi mantida e revisada por screenshots.
+## Aprendizado e comunicação
 
-A quinta entrega está em `feat/immersive-room-design`. O pedido de uma experiência mais criativa trouxe visualização 3D real, composição gamer e uma nova apresentação. A planta continua responsável pelo posicionamento. Ver [ENTREGA-05.md](ENTREGA-05.md) para projeção das coordenadas, materiais, desempenho, testes e exercícios. O ambiente Pages também permite esta branch; a main continua preservada.
+O projeto foi construído por entregas, com decisões e exercícios registrados. O objetivo é conseguir modificar e explicar o código, além de demonstrar o produto. Exemplos de estudo:
+
+- Ajustar um limite de tamanho em `geometry.ts` e testar objetos girados perto das paredes.
+- Identificar o começo, previews, confirmação e cancelamento de um gesto no reducer.
+- Acompanhar a transformação do centro da peça em `projection.ts`.
+- Exportar um documento e comparar os campos locais com os campos do snapshot público.
+- Navegar apenas com teclado e repetir a câmera com movimento reduzido.
+
+Descreva mudanças pelo efeito no produto e pelas decisões que o sustentam. Evite travessões em novos textos da interface e documentação, conforme preferência do autor. Os [guias de cada entrega](README.md) aprofundam esses exercícios.

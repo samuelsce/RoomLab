@@ -86,3 +86,9 @@ Os novos testes verificam mudanças visíveis de câmera e cor, restauração da
 ## Versionamento
 
 Branch: `feat/immersive-room-design`, criada a partir da entrega anterior. Commits separados para modelos/dados, interface/visualização, testes/publicação e documentação. A main continua preservada. O workflow e o ambiente de Pages permitem publicar esta branch após as verificações.
+
+## Publicação verificada
+
+O [workflow desta entrega](https://github.com/samuelsce/RoomLab/actions/runs/37417938419) terminou com sucesso, incluindo validação, testes e publicação do código `f6f8034`. A [demo pública](https://samuelsce.github.io/RoomLab/) foi verificada com HTTP 200, quarto gamer 3D renderizado, compartilhamento aberto em uma sessão sem dados locais, cópia editável e recarregamento. Os commits posteriores de documentação não alteram a aplicação publicada.
+
+Commits da implementação: `42d6532` (modelos e dados), `96d8497` (interface e renderização), `68c6636` (testes e publicação), `c665c16` (documentação) e `f6f8034` (revisão de materiais e títulos). A main permanece em `df622aa`.
