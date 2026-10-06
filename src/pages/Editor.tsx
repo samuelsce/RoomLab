@@ -196,12 +196,15 @@ function EditorWorkspace({
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<Category>('Todos')
   const [panel, setPanel] = useState<'catalog' | 'properties'>('catalog')
+  const [propertiesDocked, setPropertiesDocked] = useState(false)
   const [zoom, setZoom] = useState(100)
   const [showGrid, setShowGrid] = useState(false)
   const [view, setView] = useState<'plan' | '3d'>(
     scene === 'gamer' ? '3d' : 'plan',
   )
   const propertiesHeading = useRef<HTMLHeadingElement>(null)
+  const roomPanel = useRef<HTMLElement>(null)
+  const catalogPanel = useRef<HTMLElement>(null)
   const objects = state.objects
   const canAdd = objects.length < MAX_OBJECTS
   const isDragging = !!state.gestureStart
@@ -217,8 +220,22 @@ function EditorWorkspace({
   )
   const showProperties = (focus = true) => {
     setPanel('properties')
-    if (focus && window.matchMedia('(max-width: 900px)').matches)
-      requestAnimationFrame(() => propertiesHeading.current?.focus())
+    // Pointer selection must keep the scene geometry stable during the gesture.
+    if (focus) setPropertiesDocked(true)
+    if (focus && window.matchMedia('(max-width: 900px)').matches) {
+      requestAnimationFrame(() => {
+        roomPanel.current?.scrollIntoView({ block: 'start' })
+        propertiesHeading.current?.focus({ preventScroll: true })
+      })
+    }
+  }
+  const showCatalog = () => {
+    setPanel('catalog')
+    setPropertiesDocked(false)
+    if (window.matchMedia('(max-width: 900px)').matches)
+      requestAnimationFrame(() =>
+        catalogPanel.current?.scrollIntoView({ block: 'start' }),
+      )
   }
   const selectObject = (object: SceneObject, reveal = true) => {
     select(object.id)
@@ -293,7 +310,10 @@ function EditorWorkspace({
   }
 
   return (
-    <div className="editor-page" onKeyDown={handleKeyboard}>
+    <div
+      className={`editor-page ${panel === 'properties' && propertiesDocked ? 'properties-docked' : ''}`}
+      onKeyDown={handleKeyboard}
+    >
       <header className="editor-header">
         <Brand />
         <div className="project-name">
@@ -404,6 +424,7 @@ function EditorWorkspace({
         </p>
         <div className="workspace">
           <aside
+            ref={catalogPanel}
             className={`catalog-panel ${panel === 'catalog' ? 'mobile-active' : ''}`}
             aria-labelledby="catalog-heading"
           >
@@ -490,7 +511,11 @@ function EditorWorkspace({
               </p>
             )}
           </aside>
-          <section className="scene-panel" aria-label="Editor do quarto">
+          <section
+            ref={roomPanel}
+            className="scene-panel"
+            aria-label="Editor do quarto"
+          >
             <div className="scene-heading">
               <span>Seu quarto</span>
               <div className="view-switch" aria-label="Vista do quarto">
@@ -624,9 +649,9 @@ function EditorWorkspace({
           <div className="mobile-panel-switch" aria-label="Painel do editor">
             <button
               aria-pressed={panel === 'catalog'}
-              onClick={() => setPanel('catalog')}
+              onClick={showCatalog}
               onPointerUp={(event) => {
-                if (event.pointerType === 'touch') setPanel('catalog')
+                if (event.pointerType === 'touch') showCatalog()
               }}
             >
               <Armchair size={18} aria-hidden="true" />
@@ -634,9 +659,9 @@ function EditorWorkspace({
             </button>
             <button
               aria-pressed={panel === 'properties'}
-              onClick={() => setPanel('properties')}
+              onClick={() => showProperties()}
               onPointerUp={(event) => {
-                if (event.pointerType === 'touch') setPanel('properties')
+                if (event.pointerType === 'touch') showProperties()
               }}
             >
               <SlidersHorizontal size={18} aria-hidden="true" />

@@ -603,6 +603,14 @@
     border-radius: 10px;
   }
 }
+@media (max-width: 900px) {
+  .properties-docked .scene-viewport .room-canvas-wrap {
+    height: clamp(110px, calc(62dvh - 300px), 220px);
+  }
+  .properties-docked .scene-viewport > .room-preview {
+    margin-block: 10px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .room-canvas-wrap,
   .environment-copy,
