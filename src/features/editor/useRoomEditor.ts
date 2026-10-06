@@ -9,15 +9,20 @@ import {
 } from './editorModel'
 import { getSceneObjects } from './scenes'
 import type { SceneName, SceneObject } from './scenes'
+import { defaultAppearance } from './appearance'
+import type { RoomAppearance } from './appearance'
+import { detach } from './surfaces'
 
 export function useRoomEditor(
   scene: SceneName,
   initialObjects?: SceneObject[],
+  initialAppearance?: RoomAppearance,
 ) {
   const [state, dispatch] = useReducer(
     editorReducer,
     initialObjects ?? getSceneObjects(scene),
-    createEditorState,
+    (objects) =>
+      createEditorState(objects, initialAppearance ?? defaultAppearance(scene)),
   )
   const [selectedId, select] = useState<string | null>(
     scene === 'empty' ? null : 'desk',
@@ -63,7 +68,7 @@ export function useRoomEditor(
       return
     }
     const object = {
-      ...selectedObject,
+      ...detach(selectedObject),
       id: crypto.randomUUID(),
       x: selectedObject.x + 16,
       y: selectedObject.y + 16,

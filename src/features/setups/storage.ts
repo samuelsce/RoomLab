@@ -2,6 +2,9 @@ import { catalog } from '../catalog/catalog.ts'
 import { MAX_OBJECTS } from '../editor/editorModel.ts'
 import { constrainObject } from '../editor/geometry.ts'
 import type { SceneName, SceneObject } from '../editor/scenes.ts'
+import { parseAppearance } from '../editor/appearance.ts'
+import type { RoomAppearance } from '../editor/appearance.ts'
+import { isDesk, isEquipment } from '../editor/surfaces.ts'
 
 export const STORAGE_KEY = 'roomlab.setups.v1'
 export const MAX_SETUPS = 30
@@ -10,6 +13,7 @@ export interface SavedSetup {
   name: string
   scene: SceneName
   objects: SceneObject[]
+  appearance?: RoomAppearance
   createdAt: string
   updatedAt: string
   revision: string
@@ -70,7 +74,8 @@ export function parseSetups(raw: string | null): SavedSetup[] {
           !/^#[\da-f]{6}$/i.test(object.color) ||
           (object.rotation !== undefined &&
             (typeof object.rotation !== 'number' ||
-              !Number.isFinite(object.rotation)))
+              !Number.isFinite(object.rotation))) ||
+          (object.attachedTo !== undefined && !text(object.attachedTo, 100))
         )
           return invalid()
         objectIds.add(object.id)
@@ -83,13 +88,30 @@ export function parseSetups(raw: string | null): SavedSetup[] {
           h: object.h as number,
           color: object.color,
           rotation: (object.rotation as number | undefined) ?? 0,
+          ...(object.attachedTo !== undefined
+            ? { attachedTo: object.attachedTo as string }
+            : {}),
         })
       })
+      for (const object of objects) {
+        if (object.attachedTo === undefined) continue
+        const desk = objects.find((item) => item.id === object.attachedTo)
+        if (
+          !isEquipment(object) ||
+          !desk ||
+          !isDesk(desk) ||
+          desk.attachedTo !== undefined
+        )
+          return invalid()
+      }
       return {
         id: setup.id,
         name: setup.name.trim(),
         scene: setup.scene as SceneName,
         objects,
+        ...(setup.appearance !== undefined
+          ? { appearance: parseAppearance(setup.appearance) }
+          : {}),
         createdAt: setup.createdAt,
         updatedAt: setup.updatedAt,
         revision: setup.revision,

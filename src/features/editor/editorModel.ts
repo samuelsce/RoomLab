@@ -2,20 +2,31 @@ import { findItem } from '../catalog/catalog.ts'
 import type { ObjectKind } from '../catalog/catalog.ts'
 import type { SceneObject } from './scenes.ts'
 import { constrainObject, ROOM } from './geometry.ts'
+import { defaultAppearance } from './appearance.ts'
+import type { RoomAppearance } from './appearance.ts'
+import { attachEquipment, detach } from './surfaces.ts'
+import { transformObjects } from './grouping.ts'
 
 export const MAX_OBJECTS = 100
 export const HISTORY_LIMIT = 50
-export interface EditorState {
+export interface RoomSnapshot {
   objects: SceneObject[]
-  past: SceneObject[][]
-  future: SceneObject[][]
-  gestureStart: SceneObject[] | null
+  appearance: RoomAppearance
+}
+export interface EditorState extends RoomSnapshot {
+  past: RoomSnapshot[]
+  future: RoomSnapshot[]
+  gestureStart: RoomSnapshot | null
+  feedback: string
 }
 export type EditorAction =
   | { type: 'add'; object: SceneObject }
   | { type: 'update'; id: string; patch: Partial<SceneObject> }
   | { type: 'delete'; id: string }
   | { type: 'layer'; id: string; direction: 'front' | 'back' }
+  | { type: 'attach'; id: string }
+  | { type: 'detach'; id: string }
+  | { type: 'appearance'; appearance: RoomAppearance }
   | { type: 'begin' }
   | { type: 'preview'; object: SceneObject }
   | { type: 'end' }
@@ -23,12 +34,17 @@ export type EditorAction =
   | { type: 'undo' }
   | { type: 'redo' }
 
-export function createEditorState(objects: SceneObject[]): EditorState {
+export function createEditorState(
+  objects: SceneObject[],
+  appearance = defaultAppearance('study'),
+): EditorState {
   return {
     objects: objects.map(constrainObject),
+    appearance,
     past: [],
     future: [],
     gestureStart: null,
+    feedback: '',
   }
 }
 
@@ -45,21 +61,35 @@ function sameObjects(a: SceneObject[], b: SceneObject[]) {
         object.w === other.w &&
         object.h === other.h &&
         object.color === other.color &&
-        object.rotation === other.rotation
+        object.rotation === other.rotation &&
+        object.attachedTo === other.attachedTo
       )
     })
   )
 }
 
-function commit(state: EditorState, objects: SceneObject[]): EditorState {
-  const previous = state.gestureStart ?? state.objects
-  if (sameObjects(previous, objects))
-    return { ...state, objects, gestureStart: null }
+function snapshot(state: RoomSnapshot): RoomSnapshot {
+  return { objects: state.objects, appearance: state.appearance }
+}
+function commit(
+  state: EditorState,
+  objects: SceneObject[],
+  appearance = state.appearance,
+): EditorState {
+  const previous = state.gestureStart ?? snapshot(state)
+  if (
+    sameObjects(previous.objects, objects) &&
+    previous.appearance.wall === appearance.wall &&
+    previous.appearance.floor === appearance.floor
+  )
+    return { ...state, objects, appearance, gestureStart: null }
   return {
     objects,
+    appearance,
     past: [...state.past, previous].slice(-HISTORY_LIMIT),
     future: [],
     gestureStart: null,
+    feedback: '',
   }
 }
 
@@ -71,47 +101,59 @@ export function editorReducer(
     case 'begin':
       return state.gestureStart
         ? state
-        : { ...state, gestureStart: state.objects }
-    case 'preview':
-      return state.gestureStart
-        ? {
-            ...state,
-            objects: state.objects.map((object) =>
-              object.id === action.object.id
-                ? constrainObject(action.object)
-                : object,
-            ),
-          }
-        : state
+        : { ...state, gestureStart: snapshot(state), feedback: '' }
+    case 'preview': {
+      if (!state.gestureStart) return state
+      const objects = transformObjects(
+        state.gestureStart.objects,
+        action.object.id,
+        action.object,
+      )
+      return { ...state, objects }
+    }
     case 'end':
       return state.gestureStart ? commit(state, state.objects) : state
     case 'cancel':
       return state.gestureStart
-        ? { ...state, objects: state.gestureStart, gestureStart: null }
+        ? { ...state, ...state.gestureStart, gestureStart: null, feedback: '' }
         : state
     case 'add':
       return state.objects.length >= MAX_OBJECTS ||
         state.objects.some((object) => object.id === action.object.id)
         ? state
         : commit(state, [...state.objects, constrainObject(action.object)])
-    case 'update':
+    case 'update': {
+      const objects = transformObjects(state.objects, action.id, action.patch)
+      return objects === state.objects &&
+        state.objects.some((object) => object.attachedTo === action.id)
+        ? {
+            ...state,
+            feedback:
+              'O conjunto não cabe nessa rotação. Desvincule os equipamentos ou escolha outro ângulo.',
+          }
+        : commit(state, objects)
+    }
+    case 'attach':
+      return commit(state, attachEquipment(state.objects, action.id))
+    case 'detach':
       return commit(
         state,
         state.objects.map((object) =>
-          object.id === action.id
-            ? constrainObject({
-                ...object,
-                ...action.patch,
-                id: object.id,
-                kind: object.kind,
-              })
+          object.id === action.id || object.attachedTo === action.id
+            ? detach(object)
             : object,
         ),
       )
+    case 'appearance':
+      return commit(state, state.objects, action.appearance)
     case 'delete':
       return commit(
         state,
-        state.objects.filter((object) => object.id !== action.id),
+        state.objects
+          .filter((object) => object.id !== action.id)
+          .map((object) =>
+            object.attachedTo === action.id ? detach(object) : object,
+          ),
       )
     case 'layer': {
       const object = state.objects.find((object) => object.id === action.id)
@@ -124,14 +166,20 @@ export function editorReducer(
     }
     case 'undo': {
       if (state.gestureStart)
-        return { ...state, objects: state.gestureStart, gestureStart: null }
+        return {
+          ...state,
+          ...state.gestureStart,
+          gestureStart: null,
+          feedback: '',
+        }
       const previous = state.past.at(-1)
       return previous
         ? {
-            objects: previous,
+            ...previous,
             past: state.past.slice(0, -1),
-            future: [state.objects, ...state.future],
+            future: [snapshot(state), ...state.future],
             gestureStart: null,
+            feedback: '',
           }
         : state
     }
@@ -139,10 +187,11 @@ export function editorReducer(
       const next = state.future[0]
       return next && !state.gestureStart
         ? {
-            objects: next,
-            past: [...state.past, state.objects].slice(-HISTORY_LIMIT),
+            ...next,
+            past: [...state.past, snapshot(state)].slice(-HISTORY_LIMIT),
             future: state.future.slice(1),
             gestureStart: null,
+            feedback: '',
           }
         : state
     }
