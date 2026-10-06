@@ -230,6 +230,8 @@ function EditorWorkspace({
   }
   const handleKeyboard = (event: KeyboardEvent<HTMLElement>) => {
     if (
+      event.defaultPrevented ||
+      event.currentTarget.querySelector('dialog[open]') ||
       (event.target as Element).closest(
         'input, textarea, select, [contenteditable="true"]',
       ) ||
