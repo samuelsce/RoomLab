@@ -9,6 +9,7 @@ const names: Record<SceneName, string> = {
   dual: 'Setup com dois monitores',
   plants: 'Cantinho com plantas',
   study: 'Mesa para estudar',
+  gamer: 'Quarto gamer',
 }
 const snapshot = (name: string, objects: SceneObject[]) =>
   JSON.stringify({ name: name.trim(), objects })

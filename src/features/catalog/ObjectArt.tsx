@@ -63,10 +63,21 @@ export function ObjectArt({ kind, color }: Props) {
                 width="90"
                 height="45"
                 rx="2"
-                fill="#91b4c0"
+                fill="#263959"
               />
-              <path d="M15 60 45 30 66 50 82 35 105 60" fill="#547e8c" />
-              <circle cx="83" cy="28" r="7" fill="#f0d7a8" />
+              <path
+                d="M15 52C42 15 61 76 105 27M15 60C48 27 66 73 105 40"
+                stroke="#927cf6"
+                strokeWidth="3"
+                fill="none"
+              />
+              <path
+                d="M15 46C51 5 60 61 105 20"
+                stroke="#59dcd6"
+                strokeWidth="2"
+                fill="none"
+              />
+              <rect x="15" y="56" width="90" height="4" fill="#65738a" />
             </g>
           ))}
         </g>
@@ -210,6 +221,22 @@ export function ObjectArt({ kind, color }: Props) {
           <rect x="32" y="13" width="56" height="74" fill="#f5f2e9" />
           <circle cx="60" cy="37" r="16" fill={color} />
           <path d="M39 76V52h20v24m4 0V45h18v31" fill="#48705a" />
+        </g>
+      )
+    case 'bed':
+      return (
+        <g>
+          <rect x="14" y="3" width="92" height="94" rx="5" fill="#a48667" />
+          <rect x="18" y="8" width="84" height="84" rx="5" fill="#f1f0ea" />
+          <rect x="18" y="36" width="84" height="56" rx="4" fill={color} />
+          <path
+            d="M19 44h82M19 80h82"
+            stroke="white"
+            opacity=".22"
+            strokeWidth="4"
+          />
+          <rect x="25" y="14" width="30" height="18" rx="5" fill="white" />
+          <rect x="65" y="14" width="30" height="18" rx="5" fill="white" />
         </g>
       )
     case 'shelf':

@@ -1,6 +1,6 @@
 import type { ObjectKind } from '../catalog/catalog'
 
-export type SceneName = 'study' | 'dual' | 'plants' | 'empty'
+export type SceneName = 'study' | 'dual' | 'plants' | 'gamer' | 'empty'
 export interface SceneObject {
   id: string
   kind: ObjectKind
@@ -74,6 +74,91 @@ const base: SceneObject[] = [
 
 export function getSceneObjects(scene: SceneName): SceneObject[] {
   if (scene === 'empty') return []
+  if (scene === 'gamer')
+    return [
+      {
+        id: 'rug',
+        kind: 'rug',
+        x: 153,
+        y: 281,
+        w: 260,
+        h: 194,
+        color: '#35435c',
+      },
+      {
+        id: 'desk',
+        kind: 'desk',
+        x: 149,
+        y: 135,
+        w: 285,
+        h: 134,
+        color: '#283548',
+      },
+      {
+        id: 'monitor',
+        kind: 'dual-monitor',
+        x: 209,
+        y: 150,
+        w: 143,
+        h: 68,
+        color: '#192639',
+      },
+      { id: 'pc', kind: 'pc', x: 363, y: 155, w: 55, h: 82, color: '#192639' },
+      {
+        id: 'keyboard',
+        kind: 'keyboard',
+        x: 238,
+        y: 222,
+        w: 94,
+        h: 32,
+        color: '#283548',
+      },
+      {
+        id: 'chair',
+        kind: 'chair',
+        x: 219,
+        y: 289,
+        w: 115,
+        h: 116,
+        color: '#283548',
+      },
+      {
+        id: 'lamp',
+        kind: 'lamp',
+        x: 157,
+        y: 161,
+        w: 48,
+        h: 58,
+        color: '#927cf6',
+      },
+      {
+        id: 'frame',
+        kind: 'frame',
+        x: 265,
+        y: 96,
+        w: 93,
+        h: 40,
+        color: '#59dcd6',
+      },
+      {
+        id: 'bed',
+        kind: 'bed',
+        x: 456,
+        y: 251,
+        w: 164,
+        h: 231,
+        color: '#657391',
+      },
+      {
+        id: 'shelf',
+        kind: 'shelf',
+        x: 457,
+        y: 125,
+        w: 158,
+        h: 66,
+        color: '#283548',
+      },
+    ]
   const objects = base.map<SceneObject>((object) => {
     if (scene === 'dual' && object.id === 'monitor')
       return { ...object, kind: 'dual-monitor', x: 223, w: 148 }

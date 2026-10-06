@@ -150,6 +150,7 @@ export function editorReducer(
 }
 
 const defaultSizes: Record<ObjectKind, [number, number]> = {
+  bed: [164, 231],
   desk: [230, 120],
   'round-desk': [175, 110],
   chair: [100, 95],

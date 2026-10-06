@@ -7,6 +7,7 @@ export const sizeLimits: Record<
   ObjectKind,
   { minW: number; minH: number; maxW: number; maxH: number }
 > = {
+  bed: { minW: 90, minH: 140, maxW: 230, maxH: 300 },
   desk: { minW: 100, minH: 60, maxW: 360, maxH: 230 },
   'round-desk': { minW: 70, minH: 50, maxW: 260, maxH: 180 },
   chair: { minW: 40, minH: 40, maxW: 190, maxH: 180 },
