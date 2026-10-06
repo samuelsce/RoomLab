@@ -7,6 +7,8 @@ Este guia oferece um caminho curto para conhecer o RoomLab como produto e aprofu
 | Ação | O que observar |
 | --- | --- |
 | Abrir um ambiente e alternar a luz | Profundidade, materiais e feedback visual dos controles |
+| Selecionar uma peça no 3D por clique/toque | Destaque, propriedades e seleção da lista acompanham a mesma peça |
+| Arrastar a câmera começando sobre um móvel | O gesto gira a vista sem selecionar a peça ou criar histórico |
 | Trocar para planta e arrastar com zoom | Correspondência entre ponteiro, peça e limites do quarto |
 | Girar/redimensionar perto de uma parede | Limites geométricos continuam válidos após a rotação |
 | Desfazer um arrasto completo | Um gesto produz uma ação de histórico |
@@ -31,6 +33,7 @@ Ative a preferência de movimento reduzido no sistema ou no navegador e repita o
 | Persistência e recuperação | [storage.ts](../src/features/setups/storage.ts), [useSetupSave.ts](../src/features/setups/useSetupSave.ts) | [storage.test.ts](../tests/storage.test.ts), [setups.spec.ts](../tests/setups.spec.ts) |
 | Compartilhamento e validação | [document.ts](../src/features/sharing/document.ts), [codec.ts](../src/features/sharing/codec.ts) | [sharing.test.ts](../tests/sharing.test.ts), [sharing.spec.ts](../tests/sharing.spec.ts) |
 | Representação 3D e recursos | [projection.ts](../src/features/room3d/projection.ts), [RoomCanvas.tsx](../src/features/room3d/RoomCanvas.tsx) | [projection.test.ts](../tests/projection.test.ts), [studio.spec.ts](../tests/studio.spec.ts) |
+| Seleção direta no 3D | [selection.ts](../src/features/room3d/selection.ts), [RoomPreview.tsx](../src/features/room3d/RoomPreview.tsx) | [selection.test.ts](../tests/selection.test.ts), [selection.spec.ts](../tests/selection.spec.ts) |
 | Build e publicação estática | [main.tsx](../src/main.tsx), [workflow](../.github/workflows/pages.yml) | [pages.spec.ts](../tests/pages.spec.ts), [check-live.mjs](../scripts/check-live.mjs) |
 
 ## Perguntas para explorar as decisões

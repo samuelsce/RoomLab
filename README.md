@@ -10,7 +10,7 @@ Projeto de portfólio front-end de [@samuelsce](https://github.com/samuelsce), c
 
 ## Conheça o projeto em dois minutos
 
-1. Abra o [quarto gamer](https://samuelsce.github.io/RoomLab/#/editor?scene=gamer), gire a câmera e experimente a luz natural/noturna.
+1. Abra o [quarto gamer](https://samuelsce.github.io/RoomLab/#/editor?scene=gamer), clique numa peça para editar, gire a câmera e experimente a luz natural/noturna.
 2. Escolha **Planta 2D**, selecione uma peça e arraste, gire ou altere a cor pelo painel de propriedades.
 3. Adicione um objeto pelo catálogo. Use **Desfazer** para comparar com a composição anterior.
 4. Dê um nome ao quarto, clique em **Salvar** e reabra em **Meus setups**.
@@ -24,7 +24,7 @@ Para avaliar o código, comece pelo [guia de avaliação técnica](docs/AVALIACA
 - Catálogo de 13 peças, busca sem distinção de acentos e filtros por categoria.
 - Adição por clique/toque ou arrasto na planta, seleção, movimento, rotação, tamanho e cores.
 - Duplicação, exclusão, camadas, grade e histórico de desfazer/refazer por ação.
-- Visualização 3D com mobiliário volumétrico, materiais, sombras, câmera e controles de luz.
+- Visualização 3D com mobiliário volumétrico, seleção por clique/toque, destaque da peça, materiais, sombras, câmera e controles de luz.
 - Interface responsiva com propriedades em painel inferior, atalhos protegidos durante diálogos, foco visível, mensagens de estado e preferência por movimento reduzido.
 - Biblioteca local: nomear, salvar, reabrir, duplicar e excluir, com validação e detecção de versões desatualizadas entre abas.
 - Importação/exportação JSON, PNG da vista atual e links com uma cópia fixa do quarto.
@@ -77,7 +77,7 @@ npm run test:pages -- --workers=2
 npm run build
 ```
 
-A validação local da [revisão de UX](docs/CORRECOES-UX.md) aprovou **26 testes unitários, 80 casos de navegador e 4 casos do build de Pages**. Sete casos adicionais são ignorados nos perfis em que não se aplicam. Os perfis de desktop, tablet e celular usam Chromium; não representam certificação em dispositivos físicos ou em todos os navegadores.
+A validação local da [entrega de seleção 3D](docs/SELECAO-3D.md) aprovou **30 testes unitários, 87 casos de navegador e 4 casos do build de Pages**. Nove casos adicionais são ignorados nos perfis em que não se aplicam. Os perfis de desktop, tablet e celular usam Chromium; não representam certificação em dispositivos físicos ou em todos os navegadores.
 
 O [workflow](.github/workflows/pages.yml) executa lint, formatação, testes e build antes de publicar. [Execução validada da entrega 3D](https://github.com/samuelsce/RoomLab/actions/runs/37417938419). `npm run test:live` verifica a demo pública, o 3D gamer, compartilhamento em sessão independente e cópia editável.
 
@@ -87,7 +87,7 @@ O salvamento é manual e local ao navegador. Limpar os dados do site remove a bi
 
 Um link contém o nome e a composição do quarto. Quem tiver o endereço completo pode abrir essa versão, e edições posteriores não modificam o link já gerado. Não há login, banco, sincronização entre dispositivos ou serviço de links curtos. O conteúdo compactado do link é limitado a 12.000 caracteres; JSON oferece uma alternativa para quartos maiores.
 
-O 3D é estilizado e as dimensões são ilustrativas. A planta posiciona as peças; o 3D permite explorar e editar pelas propriedades/lista. Luz e câmera são preferências temporárias de visualização. Sem suporte gráfico, a planta continua disponível. Veja os [limites e tradeoffs da arquitetura](docs/ARQUITETURA.md).
+O 3D é estilizado, e as dimensões usam unidades do desenho. A planta posiciona as peças; o 3D permite selecionar por clique/toque e editar pelas propriedades/lista. Luz e câmera são preferências temporárias de visualização. Sem suporte gráfico, a planta continua disponível. Veja os [limites e tradeoffs da arquitetura](docs/ARQUITETURA.md).
 
 ## Documentação
 
