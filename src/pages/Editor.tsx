@@ -540,7 +540,16 @@ function EditorWorkspace({
             </div>
             <div className="scene-viewport" ref={previewScene}>
               {view === '3d' ? (
-                <RoomPreview scene={scene} objects={objects} />
+                <RoomPreview
+                  scene={scene}
+                  objects={objects}
+                  selectedId={selectedObject?.id}
+                  onSelect={(id) => {
+                    const object = objects.find((item) => item.id === id)
+                    if (object) selectObject(object)
+                    else select(null)
+                  }}
+                />
               ) : (
                 <>
                   <div
@@ -635,7 +644,7 @@ function EditorWorkspace({
             </div>
             <p className="scene-hint">
               {view === '3d'
-                ? 'Arraste para girar a câmera. Edite pela lista de objetos ou volte à planta para posicionar as peças.'
+                ? 'Clique ou toque numa peça para editar. Arraste para girar a câmera. Use a planta para posicionar as peças.'
                 : 'Arraste para mover. Use o canto azul para redimensionar. Setas movem a seleção; Shift aumenta o passo.'}
             </p>
             <p className="grid-note">

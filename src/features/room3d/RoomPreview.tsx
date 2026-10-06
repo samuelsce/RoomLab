@@ -7,7 +7,16 @@ import {
   useState,
 } from 'react'
 import type { ReactNode } from 'react'
-import { ChevronLeft, ChevronRight, RotateCcw, Moon, Sun } from 'lucide-react'
+import {
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+  Moon,
+  Sun,
+  MousePointer2,
+  X,
+} from 'lucide-react'
+import { findItem } from '../catalog/catalog'
 import { getSceneObjects } from '../editor/scenes'
 import type { SceneName, SceneObject } from '../editor/scenes'
 import { RoomScene } from '../editor/RoomScene'
@@ -34,10 +43,14 @@ export function RoomPreview({
   scene,
   objects: suppliedObjects,
   controls = true,
+  selectedId,
+  onSelect,
 }: {
   scene: SceneName
   objects?: SceneObject[]
   controls?: boolean
+  selectedId?: string
+  onSelect?: (id: string | null) => void
 }) {
   const objects = useMemo(
     () => suppliedObjects ?? getSceneObjects(scene),
@@ -55,6 +68,7 @@ export function RoomPreview({
   const night = light === null ? scene === 'gamer' : light === 'night'
   const onReady = useCallback(() => setReady(true), [])
   const onUnavailable = useCallback(() => setUnavailable(true), [])
+  const selected = objects.find((object) => object.id === selectedId)
   const fallback = (
     <div className="room-fallback">
       <RoomScene scene={scene} objects={objects} />
@@ -85,9 +99,29 @@ export function RoomPreview({
                 command={command}
                 onReady={onReady}
                 onUnavailable={onUnavailable}
+                selectedId={selectedId}
+                onSelect={onSelect}
               />
             </Suspense>
           </RenderBoundary>
+        )}
+        {onSelect && ready && !unavailable && (
+          <div className="room-selection">
+            <MousePointer2 size={16} aria-hidden="true" />
+            <span role="status">
+              {selected
+                ? findItem(selected.kind).name
+                : 'Toque ou clique numa peça'}
+            </span>
+            {selected && (
+              <button
+                aria-label="Limpar seleção"
+                onClick={() => onSelect(null)}
+              >
+                <X size={16} aria-hidden="true" />
+              </button>
+            )}
+          </div>
         )}
       </div>
       {controls && !unavailable && (

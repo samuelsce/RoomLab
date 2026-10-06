@@ -50,6 +50,17 @@ test('built Pages app reloads hash routes and opens a share without a server or 
     .getByRole('link', { name: 'Montar meu setup', exact: true })
     .click()
   await expect(page).toHaveURL(/\/RoomLab\/#\/editor\?scene=gamer$/)
+  await expect(page.locator('.room-preview')).toHaveAttribute(
+    'data-ready',
+    'true',
+  )
+  const canvas = page.getByRole('img', { name: 'Visualização 3D do quarto' })
+  const box = (await canvas.boundingBox())!
+  await canvas.click({ position: { x: box.width * 0.62, y: box.height * 0.5 } })
+  await expect(
+    page.getByRole('heading', { name: 'Cama', exact: true }),
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'Cor Verde', exact: true }).click()
   await page.getByLabel('Nome do setup').fill('Setup no GitHub Pages')
   await page.getByRole('button', { name: 'Salvar', exact: true }).click()
   await page.reload()
@@ -73,6 +84,7 @@ test('built Pages app reloads hash routes and opens a share without a server or 
     recipient.getByRole('heading', { name: 'Setup no GitHub Pages' }),
   ).toBeVisible()
   expect(await recipient.evaluate(() => localStorage.length)).toBe(0)
+  await expect(recipient.locator('.room-selection')).toHaveCount(0)
   await recipient.reload()
   await expect(
     recipient.getByRole('heading', { name: 'Setup no GitHub Pages' }),
@@ -86,6 +98,9 @@ test('built Pages app reloads hash routes and opens a share without a server or 
     .getByRole('button', { name: 'Planta 2D', exact: true })
     .click()
   await expect(recipient.locator('[data-object-id]')).toHaveCount(10)
+  await expect(
+    recipient.locator('[data-object-id="bed"] rect[fill="#48705a"]').first(),
+  ).toBeVisible()
   await expect(
     recipient.getByText('Salvo neste navegador', { exact: true }),
   ).toBeVisible()
