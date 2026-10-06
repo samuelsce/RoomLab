@@ -70,7 +70,7 @@ npm run test:pages -- --workers=2
 npm run build
 ```
 
-The 3D delivery passed 21 unit tests, 72 browser cases and 2 Pages-build cases. Six additional cases are skipped where their device-specific behavior does not apply. Browser coverage uses Chromium desktop, tablet and mobile profiles, not physical-device or all-browser certification.
+Local validation of the [3D furniture refinement](docs/REFINAMENTO-3D.md) passed 26 unit tests, 72 browser cases and 2 Pages-build cases. Six additional cases are skipped where their device-specific behavior does not apply. Browser coverage uses Chromium desktop, tablet and mobile profiles, not physical-device or all-browser certification.
 
 The [workflow](.github/workflows/pages.yml) validates changes before deployment. [Verified 3D delivery run](https://github.com/samuelsce/RoomLab/actions/runs/37417938419). `npm run test:live` checks the public demo, 3D gaming scene, independent shared view and editable copy.
 

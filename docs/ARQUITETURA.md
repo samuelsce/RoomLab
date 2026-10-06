@@ -49,9 +49,11 @@ Durante um arrasto, ações de preview atualizam a representação. Ao concluir,
 
 ## Representação 3D
 
-[`projection.ts`](../src/features/room3d/projection.ts) converte o centro da peça para X/Z no piso e a rotação para o eixo vertical. Equipamentos recebem altura de bancada quando seu centro está sobre uma mesa, considerando a rotação da mesa.
+[`projection.ts`](../src/features/room3d/projection.ts) converte o centro da peça para X/Z no piso e a rotação para o eixo vertical. Equipamentos recebem altura de bancada quando seu centro está sobre uma mesa, considerando a rotação da mesa. O tapete também funciona como uma superfície de apoio; quando a mesa está sobre ele, seus equipamentos acompanham a mesma elevação.
 
-[`models.ts`](../src/features/room3d/models.ts) constrói mobiliário com geometria, materiais, texturas de tela e detalhes por categoria. Alturas são convencionais por tipo. O ambiente gamer acrescenta materiais escuros e iluminação RGB.
+[`models.ts`](../src/features/room3d/models.ts) constrói mobiliário com geometria, materiais, texturas de tela e detalhes por categoria. As proporções são estilizadas: telas preservam 16:9, cadeira e equipamentos acompanham o tamanho da peça, e a mesa mantém uma altura de apoio comum. O ambiente gamer acrescenta materiais escuros e iluminação RGB.
+
+[`chair.ts`](../src/features/room3d/chair.ts) reúne assento, encosto, pistão e cinco braços com rodízios duplos. [`primitives.ts`](../src/features/room3d/primitives.ts) posiciona estruturas por pontos de conexão e constrói tampos arredondados. Os testes de [mobiliário](../tests/furniture.test.ts) verificam o encaixe da base nos rodízios, o eixo das rodas, limites após redimensionamento e altura do tampo.
 
 [`RoomCanvas.tsx`](../src/features/room3d/RoomCanvas.tsx) administra renderer, luzes, câmera e OrbitControls. O motor é carregado por importação dinâmica. Renderizações são solicitadas por mudanças relevantes, e a câmera usa uma animação curta em resposta aos controles. O limite de densidade é 1,7 pixels por pixel CSS. Geometrias, materiais, texturas e controles são liberados ao desmontar.
 
