@@ -42,4 +42,4 @@ Os exercícios acompanham entregas concretas, sem bloquear o desenvolvimento. Re
 
 ## Situação desta entrega
 
-Planejamento e pesquisa documentados. Aplicativo, dependências, testes, CI, hospedagem e serviço de compartilhamento ainda não foram implementados. A skill `frontend-design` não foi encontrada; nenhuma aplicação dessa skill é alegada.
+Planejamento e pesquisa documentados. Aplicativo, dependências, testes, CI, hospedagem e serviço de compartilhamento ainda não foram implementados. A skill `frontend-design` foi carregada pelo comando solicitado e aplicada à revisão visual documentada em [REFERENCIAS.md](REFERENCIAS.md). Antes da implementação, revisar tokens e layout contra o briefing; durante a construção, usar screenshots para criticar a interface e remover decoração sem função.
