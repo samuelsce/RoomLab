@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link, Route, Routes, useLocation } from 'react-router'
 import { Home } from './pages/Home'
 import { Editor } from './pages/Editor'
+import { Setups } from './pages/Setups'
 
 export function App() {
   const location = useLocation()
@@ -9,7 +10,9 @@ export function App() {
     document.title =
       location.pathname === '/editor'
         ? 'Editor | RoomLab'
-        : 'RoomLab | monte seu setup'
+        : location.pathname === '/setups'
+          ? 'Meus setups | RoomLab'
+          : 'RoomLab | monte seu setup'
     if (!location.hash) window.scrollTo(0, 0)
   }, [location.pathname, location.search, location.hash])
   return (
@@ -20,6 +23,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/editor" element={<Editor />} />
+        <Route path="/setups" element={<Setups />} />
         <Route
           path="*"
           element={

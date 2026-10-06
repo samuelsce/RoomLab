@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { Link, useLocation, useSearchParams } from 'react-router'
 import {
   Search,
   SlidersHorizontal,
@@ -14,6 +14,7 @@ import {
   Undo2,
   Redo2,
   Grid2X2,
+  Save,
 } from 'lucide-react'
 import { Brand } from '../components/Brand'
 import { catalog, categories, findItem } from '../features/catalog/catalog'
@@ -25,19 +26,138 @@ import { useRoomEditor } from '../features/editor/useRoomEditor'
 import { MAX_OBJECTS } from '../features/editor/editorModel'
 import { moveObject } from '../features/editor/geometry'
 import type { SceneName, SceneObject } from '../features/editor/scenes'
+import { readSetups, storageMessage } from '../features/setups/storage'
+import type { SavedSetup } from '../features/setups/storage'
+import { useSetupSave } from '../features/setups/useSetupSave'
+import { ConfirmDialog } from '../components/ConfirmDialog'
+import { exportJson, exportPng } from '../features/setups/export'
 
 export function Editor() {
   const [params] = useSearchParams()
+  const location = useLocation()
   const rawScene = params.get('scene')
   const scene: SceneName =
     rawScene === 'dual' || rawScene === 'plants' || rawScene === 'empty'
       ? rawScene
       : 'study'
-  return <EditorWorkspace key={scene} scene={scene} />
+  const setupId = params.get('setup')
+  const workspaceKey =
+    (location.state as { workspaceKey?: string } | null)?.workspaceKey ??
+    setupId ??
+    scene
+  return (
+    <EditorLoader
+      key={workspaceKey}
+      scene={scene}
+      setupId={setupId}
+      workspaceKey={workspaceKey}
+    />
+  )
 }
 
-function EditorWorkspace({ scene }: { scene: SceneName }) {
-  const editor = useRoomEditor(scene)
+function EditorLoader({
+  scene,
+  setupId,
+  workspaceKey,
+}: {
+  scene: SceneName
+  setupId: string | null
+  workspaceKey: string
+}) {
+  const [loaded] = useState(() => {
+    if (!setupId) return { setup: undefined, error: '' }
+    try {
+      const setup = readSetups(window.localStorage).find(
+        (item) => item.id === setupId,
+      )
+      return {
+        setup,
+        error: setup
+          ? ''
+          : 'Este setup não está salvo neste navegador. Ele pode ter sido excluído ou criado em outro dispositivo.',
+      }
+    } catch (error) {
+      return { setup: undefined, error: storageMessage(error) }
+    }
+  })
+  if (loaded.error)
+    return (
+      <main id="main-content" className="not-found">
+        <h1>Não foi possível abrir o setup.</h1>
+        <p>{loaded.error}</p>
+        <Link className="button button-primary" to="/setups">
+          Ver meus setups
+        </Link>
+      </main>
+    )
+  return (
+    <EditorWorkspace
+      scene={loaded.setup?.scene ?? scene}
+      initial={loaded.setup}
+      workspaceKey={workspaceKey}
+    />
+  )
+}
+
+function EditorWorkspace({
+  scene,
+  initial,
+  workspaceKey,
+}: {
+  scene: SceneName
+  initial?: SavedSetup
+  workspaceKey: string
+}) {
+  const editor = useRoomEditor(scene, initial?.objects)
+  const project = useSetupSave(
+    scene,
+    editor.state.objects,
+    initial,
+    workspaceKey,
+  )
+  const exportScene = useRef<HTMLDivElement>(null)
+  const [exporting, setExporting] = useState(false)
+  const [exportMessage, setExportMessage] = useState('')
+  const [exportError, setExportError] = useState('')
+  const exportFile = async (format: 'json' | 'png') => {
+    setExportMessage('')
+    setExportError('')
+    setExporting(true)
+    try {
+      const name = project.name.trim()
+      if (!name) throw new Error('Dê um nome ao setup antes de exportar.')
+      if (format === 'png') {
+        const svg = exportScene.current?.querySelector('svg')
+        if (!svg)
+          throw new Error('Não foi possível gerar a imagem. Tente novamente.')
+        await exportPng(svg, name)
+      } else {
+        const now = new Date().toISOString()
+        exportJson({
+          id: project.saved?.id ?? crypto.randomUUID(),
+          name,
+          scene,
+          objects: editor.state.objects,
+          createdAt: project.saved?.createdAt ?? now,
+          updatedAt: now,
+          revision: crypto.randomUUID(),
+        })
+      }
+      setExportMessage(
+        format === 'png'
+          ? 'Imagem PNG gerada para download.'
+          : 'Backup JSON gerado para download. Ele inclui suas alterações atuais.',
+      )
+    } catch (error) {
+      setExportError(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível exportar. Tente novamente.',
+      )
+    } finally {
+      setExporting(false)
+    }
+  }
   const {
     state,
     selectedObject,
@@ -90,6 +210,11 @@ function EditorWorkspace({ scene }: { scene: SceneName }) {
       return
     const modifier = event.ctrlKey || event.metaKey
     const key = event.key.toLowerCase()
+    if (modifier && key === 's') {
+      event.preventDefault()
+      project.save()
+      return
+    }
     if (modifier && key === 'z') {
       event.preventDefault()
       dispatch({ type: event.shiftKey ? 'redo' : 'undo' })
@@ -142,33 +267,88 @@ function EditorWorkspace({ scene }: { scene: SceneName }) {
       <header className="editor-header">
         <Brand />
         <div className="project-name">
-          <span>
-            {scene === 'empty'
-              ? 'Meu novo quarto'
-              : scene === 'dual'
-                ? 'Setup com dois monitores'
-                : scene === 'plants'
-                  ? 'Cantinho com plantas'
-                  : 'Mesa para estudar'}
+          <label className="sr-only" htmlFor="setup-name">
+            Nome do setup
+          </label>
+          <input
+            id="setup-name"
+            maxLength={60}
+            value={project.name}
+            onChange={(event) => project.setName(event.target.value)}
+          />
+          <span className="demo-badge">
+            {!project.saved
+              ? 'Não salvo'
+              : project.dirty
+                ? 'Alterações pendentes'
+                : 'Salvo neste navegador'}
           </span>
-          <span className="demo-badge">Não salvo</span>
         </div>
-        <Link to="/" className="back-home">
+        <div className="save-actions">
+          <button
+            className="button button-small button-primary"
+            disabled={isDragging}
+            onClick={() => project.save()}
+          >
+            <Save size={16} aria-hidden="true" />
+            Salvar
+          </button>
+          {project.saved && (
+            <button
+              className="button button-small"
+              disabled={isDragging}
+              onClick={() => project.save(true)}
+            >
+              Salvar cópia
+            </button>
+          )}
+        </div>
+        <Link to="/setups" className="back-home">
           <ArrowLeft size={16} aria-hidden="true" />
-          <span>Voltar</span>
+          <span>Meus setups</span>
         </Link>
       </header>
       <main id="main-content" className="editor-main">
         <div className="editor-notice">
           <Info size={17} aria-hidden="true" />
           <p>
-            Seu quarto já pode ser editado.{' '}
+            Salve para continuar depois.{' '}
             <span>
-              As alterações ficam nesta sessão. O salvamento chega na próxima
-              entrega.
+              Seus setups ficam apenas neste navegador. Use Salvar após editar.
             </span>
           </p>
         </div>
+        {project.error && (
+          <p className="save-feedback save-error" role="alert">
+            {project.error}
+          </p>
+        )}
+        <p className="save-feedback" role="status">
+          {project.feedback}
+        </p>
+        <div className="export-bar">
+          <span>Leve seu quarto com você</span>
+          <button
+            disabled={isDragging || exporting}
+            onClick={() => void exportFile('png')}
+          >
+            Baixar PNG
+          </button>
+          <button
+            disabled={isDragging || exporting}
+            onClick={() => void exportFile('json')}
+          >
+            Exportar JSON
+          </button>
+        </div>
+        {exportError && (
+          <p className="save-feedback save-error" role="alert">
+            {exportError}
+          </p>
+        )}
+        <p className="save-feedback" role="status">
+          {exportMessage}
+        </p>
         <p className="sr-only" role="status">
           {editor.message}
         </p>
@@ -448,6 +628,20 @@ function EditorWorkspace({ scene }: { scene: SceneName }) {
           </aside>
         </div>
       </main>
+      <div ref={exportScene} hidden aria-hidden="true">
+        <RoomScene scene={scene} objects={objects} />
+      </div>
+      {project.blocker.state === 'blocked' && (
+        <ConfirmDialog
+          title="Sair sem salvar?"
+          confirm="Sair sem salvar"
+          onCancel={() => project.blocker.reset?.()}
+          onConfirm={() => project.blocker.proceed?.()}
+        >
+          Suas últimas alterações ainda não foram salvas. Cancele para voltar ao
+          quarto e salvar.
+        </ConfirmDialog>
+      )}
     </div>
   )
 }
