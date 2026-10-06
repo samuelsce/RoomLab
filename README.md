@@ -2,7 +2,9 @@
 
 Projeto de portfólio front-end: um editor visual para montar e personalizar um quarto com um setup de trabalho ou jogos.
 
-Status: quarta entrega implementada, com editor, biblioteca local e compartilhamento por link. Desenvolvimento em `feat/setup-sharing`. Publicação configurada no GitHub Pages.
+Status: quarta entrega implementada, com editor, biblioteca local e compartilhamento por link. Desenvolvimento em `feat/setup-sharing`.
+
+**[Experimentar a demo no GitHub Pages](https://samuelsce.github.io/RoomLab/)**
 
 ![Home do RoomLab](docs/screenshots/home-desktop.png)
 
@@ -72,6 +74,6 @@ Demonstrar interfaces responsivas, manipulação gráfica, estado complexo, aces
 
 A `main` recebe entregas revisadas. Planejamento e implementação acontecem em branches específicas. A proteção automática da `main` ainda não foi configurada no GitHub.
 
-Repositório: [samuelsce/RoomLab](https://github.com/samuelsce/RoomLab). Endereço configurado para a demo: [RoomLab no GitHub Pages](https://samuelsce.github.io/RoomLab/). A publicação passa pelas verificações do workflow antes de disponibilizar a interface.
+Repositório: [samuelsce/RoomLab](https://github.com/samuelsce/RoomLab). A demo está publicada no GitHub Pages. O [workflow da quarta entrega](https://github.com/samuelsce/RoomLab/actions/runs/37413959090) terminou com sucesso. O endereço real foi verificado com compartilhamento em sessão independente, edição de cópia e recarregamento. Novas publicações passam pelos checks do workflow.
 
 No Pages, o aplicativo usa rotas com `#`, como `/RoomLab/#/editor`, para recarregar sem precisar de servidor de rotas. Links compartilhados usam `/RoomLab/#/setup?data=v1...`. A composição é compactada no próprio endereço; não há banco, chaves secretas ou links curtos nesta versão. O limite é 12.000 caracteres para o conteúdo do link. Veja os limites e a configuração em [ENTREGA-04.md](docs/ENTREGA-04.md).

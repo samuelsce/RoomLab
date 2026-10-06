@@ -67,6 +67,8 @@ Pages foi configurado para GitHub Actions, com permissão de publicação para m
 - A sessão do destinatário começa sem dados locais; abrir o link mostra a mesma composição e Editar uma cópia cria um documento independente.
 - Falha de cópia automática, foco, Escape, dados inválidos, navegador sem descompactação e quota local tratados.
 - Build com tipos, lint, formatação e revisão visual concluídos.
+- [Workflow no GitHub Actions](https://github.com/samuelsce/RoomLab/actions/runs/37413959090) concluído com sucesso, incluindo validação e deploy.
+- [Demo publicada](https://samuelsce.github.io/RoomLab/) verificada no endereço real: resposta HTTP 200, visualização em sessão independente, edição de cópia e recarregamento. O comando `npm run test:live` reproduz essa conferência sem publicar documentos no servidor.
 
 Os testes usam Chromium e emulação de viewport/toque. Não representam validação em Safari, Firefox ou todos os dispositivos físicos.
 
