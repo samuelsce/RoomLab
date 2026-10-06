@@ -228,6 +228,9 @@ test('save, backup import, library previews and independent shared copies retain
     expect(await recipient.evaluate(() => localStorage.length)).toBe(0)
     await recipient.getByRole('button', { name: 'Editar uma cópia' }).click()
     await expect(recipient).toHaveURL(/\/editor\?setup=/)
+    await expect(recipient.getByLabel('Nome do setup')).toHaveValue(
+      'Quarto gamer',
+    )
     await recipient
       .getByRole('button', { name: 'Planta 2D', exact: true })
       .click()

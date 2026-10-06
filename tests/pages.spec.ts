@@ -78,6 +78,7 @@ test('built Pages app reloads hash routes and opens a share without a server or 
   await page.getByRole('button', { name: 'Concluir', exact: true }).click()
   await page.getByLabel('Nome do setup').fill('Setup no GitHub Pages')
   await page.getByRole('button', { name: 'Salvar', exact: true }).click()
+  await expect(page).toHaveURL(/\/RoomLab\/#\/editor\?setup=/)
   await page.reload()
   await expect(canvas).toHaveAttribute('data-scene', 'gamer')
   await expect(canvas).toHaveAttribute('data-wall', '#889f93')
@@ -112,6 +113,9 @@ test('built Pages app reloads hash routes and opens a share without a server or 
   ).toBe(true)
   await recipient.getByRole('button', { name: 'Editar uma cópia' }).click()
   await expect(recipient).toHaveURL(/\/RoomLab\/#\/editor\?setup=/)
+  await expect(recipient.getByLabel('Nome do setup')).toHaveValue(
+    'Setup no GitHub Pages',
+  )
   await recipient
     .getByRole('button', { name: 'Planta 2D', exact: true })
     .click()
