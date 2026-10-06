@@ -13,9 +13,11 @@
     "lint": "eslint .",
     "preview": "vite preview --host 127.0.0.1",
     "test:e2e": "playwright test",
+    "test:pages": "playwright test --config playwright.pages.config.ts",
+    "test:live": "node scripts/check-live.mjs",
     "test:unit": "node --experimental-strip-types --test tests/*.test.ts",
-    "format": "prettier --write src tests scripts *.ts *.js *.json index.html",
-    "format:check": "prettier --check src tests scripts *.ts *.js *.json index.html",
+    "format": "prettier --write src tests scripts *.ts *.js *.json index.html .github/workflows/*.yml",
+    "format:check": "prettier --check src tests scripts *.ts *.js *.json index.html .github/workflows/*.yml",
     "capture:preview": "node scripts/capture-preview.mjs"
   },
   "dependencies": {
