@@ -44,4 +44,4 @@ Os exercícios acompanham entregas concretas, sem bloquear o desenvolvimento. Re
 
 ## Situação desta entrega
 
-Planejamento e três entregas documentados. A fundação está em `feat/app-foundation`, o editor funcional em `feat/room-editor` e a persistência em `feat/local-setups`. Detalhes em [ENTREGA-01.md](ENTREGA-01.md), [ENTREGA-02.md](ENTREGA-02.md) e [ENTREGA-03.md](ENTREGA-03.md). Compartilhamento, CI e hospedagem permanecem como próximas etapas. A direção da skill `frontend-design` foi mantida e revisada por screenshots.
+Planejamento e quatro entregas documentados. A fundação está em `feat/app-foundation`, o editor funcional em `feat/room-editor`, a persistência em `feat/local-setups` e os links em `feat/setup-sharing`. Ver [ENTREGA-04.md](ENTREGA-04.md) para compartilhamento, workflow e publicação. A main permanece na base inicial. A publicação da branch de compartilhamento é permitida no ambiente github-pages, sem integrar código na main. A direção da skill `frontend-design` foi mantida e revisada por screenshots.

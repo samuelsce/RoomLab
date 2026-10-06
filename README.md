@@ -2,7 +2,7 @@
 
 Projeto de portfólio front-end: um editor visual para montar e personalizar um quarto com um setup de trabalho ou jogos.
 
-Status: terceira entrega implementada, com editor e biblioteca de setups locais. Desenvolvimento em `feat/local-setups`.
+Status: quarta entrega implementada, com editor, biblioteca local e compartilhamento por link. Desenvolvimento em `feat/setup-sharing`. Publicação configurada no GitHub Pages.
 
 ![Home do RoomLab](docs/screenshots/home-desktop.png)
 
@@ -19,8 +19,9 @@ Status: terceira entrega implementada, com editor e biblioteca de setups locais.
 - Nomear, salvar, reabrir, duplicar e excluir setups locais com miniaturas.
 - Exportar/importar backup JSON validado e baixar PNG da composição.
 - Aviso de edições pendentes, erros de armazenamento e conflitos entre versões de abas.
+- Gerar link com uma cópia fixa do quarto, abrir sem dados locais e editar uma cópia independente.
 
-Use **Salvar** após editar. Os setups ficam no armazenamento deste navegador, limitados a 30 quartos de até 100 objetos cada. Recarregar reabre a última versão salva; limpar os dados do site exclui os setups. Exporte JSON para guardar um backup ou levar a outro dispositivo. As URLs locais não são links públicos. Compartilhamento será a próxima etapa. As dimensões do quarto são ilustrativas; posições e tamanhos dos objetos usam unidades do desenho.
+Use **Salvar** após editar. Os setups ficam no armazenamento deste navegador, limitados a 30 quartos de até 100 objetos cada. Recarregar reabre a última versão salva; limpar os dados do site exclui os setups. Exporte JSON para guardar um backup ou levar a outro dispositivo. **Compartilhar** gera um link com a composição atual, independente do salvamento local. Quem tiver o endereço inteiro pode abrir a cópia. As dimensões do quarto são ilustrativas; posições e tamanhos dos objetos usam unidades do desenho.
 
 ## Rodar localmente
 
@@ -43,6 +44,7 @@ npm run format:check
 npm run test:unit
 npx playwright install chromium
 npm run test:e2e -- --workers=2
+npm run test:pages
 ```
 
 Os testes usam Chromium em tamanhos de desktop, tablet e celular; isso não representa validação em dispositivos físicos ou em todos os navegadores. Para atualizar as capturas, mantenha o servidor local na porta 5173 e execute `npm run capture:preview`.
@@ -63,10 +65,13 @@ Demonstrar interfaces responsivas, manipulação gráfica, estado complexo, aces
 - [Primeira entrega: decisões, verificação e guia de aprendizado](docs/ENTREGA-01.md)
 - [Segunda entrega: geometria, interações e histórico](docs/ENTREGA-02.md)
 - [Terceira entrega: persistência, biblioteca e backups](docs/ENTREGA-03.md)
+- [Quarta entrega: links e GitHub Pages](docs/ENTREGA-04.md)
 - [Créditos dos assets](docs/CREDITOS.md)
 
 ## Versionamento
 
 A `main` recebe entregas revisadas. Planejamento e implementação acontecem em branches específicas. A proteção automática da `main` ainda não foi configurada no GitHub.
 
-Repositório: [samuelsce/RoomLab](https://github.com/samuelsce/RoomLab). Ainda não há uma demo hospedada ou domínio contratado. Para hospedar esta SPA, configurar fallback das rotas para `index.html`.
+Repositório: [samuelsce/RoomLab](https://github.com/samuelsce/RoomLab). Endereço configurado para a demo: [RoomLab no GitHub Pages](https://samuelsce.github.io/RoomLab/). A publicação passa pelas verificações do workflow antes de disponibilizar a interface.
+
+No Pages, o aplicativo usa rotas com `#`, como `/RoomLab/#/editor`, para recarregar sem precisar de servidor de rotas. Links compartilhados usam `/RoomLab/#/setup?data=v1...`. A composição é compactada no próprio endereço; não há banco, chaves secretas ou links curtos nesta versão. O limite é 12.000 caracteres para o conteúdo do link. Veja os limites e a configuração em [ENTREGA-04.md](docs/ENTREGA-04.md).
