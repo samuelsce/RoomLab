@@ -124,7 +124,7 @@ export function ObjectProperties({
         />
         <NumberControl
           key={`h-${object.id}-${object.h}`}
-          label="Altura"
+          label="Profundidade"
           value={object.h}
           min={limits.minH}
           max={limits.maxH}
@@ -146,8 +146,8 @@ export function ObjectProperties({
         </button>
       </div>
       <p className="unit-note">
-        Posições e tamanhos em unidades do desenho. A peça permanece dentro do
-        quarto.
+        Posições e tamanhos em unidades do desenho (u). A profundidade mede o
+        espaço da peça no piso.
       </p>
       <fieldset className="color-options">
         <legend>Cor da peça</legend>
