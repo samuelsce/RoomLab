@@ -3,6 +3,7 @@ import { useBlocker, useNavigate } from 'react-router'
 import type { SceneName, SceneObject } from '../editor/scenes'
 import { saveSetup, storageMessage } from './storage'
 import type { SavedSetup } from './storage'
+import type { RoomAppearance } from '../editor/appearance'
 
 const names: Record<SceneName, string> = {
   empty: 'Meu novo quarto',
@@ -11,23 +12,27 @@ const names: Record<SceneName, string> = {
   study: 'Mesa para estudar',
   gamer: 'Quarto gamer',
 }
-const snapshot = (name: string, objects: SceneObject[]) =>
-  JSON.stringify({ name: name.trim(), objects })
+const snapshot = (
+  name: string,
+  objects: SceneObject[],
+  appearance: RoomAppearance,
+) => JSON.stringify({ name: name.trim(), objects, appearance })
 
 export function useSetupSave(
   scene: SceneName,
   objects: SceneObject[],
   initial: SavedSetup | undefined,
   workspaceKey: string,
+  appearance: RoomAppearance,
 ) {
   const [saved, setSaved] = useState(initial)
   const [name, setName] = useState(initial?.name ?? names[scene])
   const [baseline, setBaseline] = useState(() =>
-    snapshot(initial?.name ?? names[scene], objects),
+    snapshot(initial?.name ?? names[scene], objects, appearance),
   )
   const [feedback, setFeedback] = useState('')
   const [error, setError] = useState('')
-  const dirty = snapshot(name, objects) !== baseline
+  const dirty = snapshot(name, objects, appearance) !== baseline
   const navigate = useNavigate()
   const savingNavigation = useRef(false)
   const blocker = useBlocker(
@@ -63,6 +68,7 @@ export function useSetupSave(
           name: cleanName,
           scene,
           objects,
+          appearance,
           createdAt: copy || !saved ? now : saved.createdAt,
           updatedAt: now,
           revision: crypto.randomUUID(),
@@ -71,7 +77,7 @@ export function useSetupSave(
       )
       setSaved(setup)
       setName(cleanName)
-      setBaseline(snapshot(cleanName, objects))
+      setBaseline(snapshot(cleanName, objects, appearance))
       setFeedback(
         copy ? 'Cópia salva neste navegador.' : 'Setup salvo neste navegador.',
       )

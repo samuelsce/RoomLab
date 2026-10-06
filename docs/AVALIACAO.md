@@ -12,6 +12,8 @@ Este guia oferece um caminho curto para conhecer o RoomLab como produto e aprofu
 | Trocar para planta e arrastar com zoom | Correspondência entre ponteiro, peça e limites do quarto |
 | Girar/redimensionar perto de uma parede | Limites geométricos continuam válidos após a rotação |
 | Desfazer um arrasto completo | Um gesto produz uma ação de histórico |
+| Ativar Mover com equipamentos nas propriedades da mesa | Monitor, PC, teclado e luminária acompanham posição e rotação; o conjunto pode ser desfeito |
+| Escolher tinta e piso em Personalizar ambiente | Duas vistas, histórico, salvamento e compartilhamento preservam os acabamentos |
 | Adicionar por toque em uma tela estreita | O quarto permanece visível acima das propriedades, que têm rolagem própria |
 | Abrir Compartilhar e pressionar Delete ou Ctrl+D | O diálogo mantém a composição e o histórico do quarto intactos |
 | Usar Pular para o conteúdo ou Os ambientes | A seção recebe foco, sem trocar de rota ou perder o rascunho |
@@ -28,6 +30,7 @@ Ative a preferência de movimento reduzido no sistema ou no navegador e repita o
 | Tema | Arquivos de entrada | Evidência nos testes |
 | --- | --- | --- |
 | Estado e histórico | [editorModel.ts](../src/features/editor/editorModel.ts), [useRoomEditor.ts](../src/features/editor/useRoomEditor.ts) | [editor-model.test.ts](../tests/editor-model.test.ts) |
+| Agrupamento e acabamentos | [grouping.ts](../src/features/editor/grouping.ts), [surfaces.ts](../src/features/editor/surfaces.ts), [appearance.ts](../src/features/editor/appearance.ts) | [composition.test.ts](../tests/composition.test.ts), [composition.spec.ts](../tests/composition.spec.ts), [composition-touch.spec.ts](../tests/composition-touch.spec.ts), [finishes.test.ts](../tests/finishes.test.ts) |
 | Ponteiro e transformações | [RoomScene.tsx](../src/features/editor/RoomScene.tsx), [geometry.ts](../src/features/editor/geometry.ts) | [editor.spec.ts](../tests/editor.spec.ts) |
 | Foco, diálogos e painel compacto | [SectionLink.tsx](../src/components/SectionLink.tsx), [Editor.tsx](../src/pages/Editor.tsx) | [dialog-shortcuts.spec.ts](../tests/dialog-shortcuts.spec.ts), [touch.spec.ts](../tests/touch.spec.ts), [pages.spec.ts](../tests/pages.spec.ts) |
 | Persistência e recuperação | [storage.ts](../src/features/setups/storage.ts), [useSetupSave.ts](../src/features/setups/useSetupSave.ts) | [storage.test.ts](../tests/storage.test.ts), [setups.spec.ts](../tests/setups.spec.ts) |
@@ -40,6 +43,8 @@ Ative a preferência de movimento reduzido no sistema ou no navegador e repita o
 
 - Por que o documento guarda coordenadas do desenho, e não posições de pixels no DOM?
 - Como o estado transitório de um gesto evita dezenas de entradas de desfazer?
+- Como a rotação da mesa preserva as posições relativas dos equipamentos e os limites do conjunto?
+- Por que paredes e piso participam do histórico, enquanto luz e câmera ficam fora do documento?
 - Por que zoom, câmera e seleção não pertencem ao documento salvo?
 - Como o parser impede que um backup ou link inválido substitua dados existentes?
 - O que a comparação de revisões entre abas detecta, e por que ela não equivale a uma transação?

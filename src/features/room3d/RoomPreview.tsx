@@ -20,6 +20,8 @@ import { findItem } from '../catalog/catalog'
 import { getSceneObjects } from '../editor/scenes'
 import type { SceneName, SceneObject } from '../editor/scenes'
 import { RoomScene } from '../editor/RoomScene'
+import { defaultAppearance } from '../editor/appearance'
+import type { RoomAppearance } from '../editor/appearance'
 
 const RoomCanvas = lazy(() => import('./RoomCanvas'))
 
@@ -45,18 +47,24 @@ export function RoomPreview({
   controls = true,
   selectedId,
   onSelect,
+  appearance: suppliedAppearance,
 }: {
   scene: SceneName
   objects?: SceneObject[]
   controls?: boolean
   selectedId?: string
   onSelect?: (id: string | null) => void
+  appearance?: RoomAppearance
 }) {
   const objects = useMemo(
     () => suppliedObjects ?? getSceneObjects(scene),
     [scene, suppliedObjects],
   )
   const [unavailable, setUnavailable] = useState(false)
+  const appearance = useMemo(
+    () => suppliedAppearance ?? defaultAppearance(scene),
+    [suppliedAppearance, scene],
+  )
   const [ready, setReady] = useState(false)
   const [command, setCommand] = useState<{
     action: 'left' | 'right' | 'reset'
@@ -71,7 +79,7 @@ export function RoomPreview({
   const selected = objects.find((object) => object.id === selectedId)
   const fallback = (
     <div className="room-fallback">
-      <RoomScene scene={scene} objects={objects} />
+      <RoomScene scene={scene} objects={objects} appearance={appearance} />
       <p>Visualização em planta. O 3D não está disponível neste dispositivo.</p>
     </div>
   )
@@ -94,6 +102,7 @@ export function RoomPreview({
             >
               <RoomCanvas
                 scene={scene}
+                appearance={appearance}
                 objects={objects}
                 night={night}
                 command={command}

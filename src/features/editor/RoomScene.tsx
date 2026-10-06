@@ -7,6 +7,8 @@ import { getSceneObjects } from './scenes'
 import type { SceneName, SceneObject } from './scenes'
 import { moveObject, resizeObject, ROOM, GRID_SIZE } from './geometry'
 import type { EditorAction } from './editorModel'
+import { defaultAppearance, floors } from './appearance'
+import type { RoomAppearance } from './appearance'
 
 interface Props {
   scene?: SceneName
@@ -18,6 +20,7 @@ interface Props {
   onDropObject?: (kind: string, point: { x: number; y: number }) => void
   showGrid?: boolean
   showMeasurements?: boolean
+  appearance?: RoomAppearance
 }
 
 export function RoomScene({
@@ -30,9 +33,12 @@ export function RoomScene({
   onDropObject,
   showGrid = false,
   showMeasurements = false,
+  appearance = defaultAppearance(scene),
 }: Props) {
   const id = useId().replace(/:/g, '')
   const objects = suppliedObjects ?? getSceneObjects(scene)
+  const floor = floors[appearance.floor]
+  const stone = appearance.floor === 'stone'
   const svgRef = useRef<SVGSVGElement>(null)
   const gesture = useRef<{
     object: SceneObject
@@ -80,6 +86,8 @@ export function RoomScene({
       className="room-scene"
       ref={svgRef}
       data-testid={onEdit ? 'editable-room' : undefined}
+      data-wall={appearance.wall}
+      data-floor={appearance.floor}
       viewBox="0 0 760 610"
       role={onSelect ? 'group' : 'img'}
       aria-label={
@@ -162,21 +170,23 @@ export function RoomScene({
         <pattern
           id={`${id}-floor`}
           width="76"
-          height="42"
+          height={stone ? 76 : 42}
           patternUnits="userSpaceOnUse"
         >
-          <rect
-            width="76"
-            height="42"
-            fill={scene === 'gamer' ? '#a49d97' : '#e0cfb6'}
-          />
+          <rect width="76" height={stone ? 76 : 42} fill={floor.plan} />
           <path
-            d="M0 0H76M0 42H76M38 0v42"
-            stroke="#c7b393"
+            d={stone ? 'M0 0H76V76H0Z' : 'M0 0H76M0 42H76M38 0v42'}
+            stroke={floor.line}
             strokeWidth="1"
             opacity=".5"
           />
-          <path d="M5 10h23m19 17h22M4 33h15" stroke="#c7b393" opacity=".4" />
+          {!stone && (
+            <path
+              d="M5 10h23m19 17h22M4 33h15"
+              stroke={floor.line}
+              opacity=".4"
+            />
+          )}
         </pattern>
         <filter
           id={`${id}-shadow`}
@@ -221,11 +231,15 @@ export function RoomScene({
         <path
           d="M110 504V83h540v421"
           fill="none"
-          stroke="#fff"
+          stroke={appearance.wall}
           strokeWidth="16"
         />
         <path d="M119 94h522v15H119Z" fill="#526574" opacity=".14" />
-        <path d="M114 508h93m94 0h349" stroke="#fff" strokeWidth="16" />
+        <path
+          d="M114 508h93m94 0h349"
+          stroke={appearance.wall}
+          strokeWidth="16"
+        />
         <path
           d="M208 507v-83a83 83 0 0 1 83 83"
           stroke="#a18e73"
@@ -261,6 +275,7 @@ export function RoomScene({
           key={object.id}
           className="room-object"
           data-object-id={onEdit ? object.id : undefined}
+          data-attached-to={object.attachedTo}
           transform={`translate(${object.x} ${object.y}) rotate(${object.rotation ?? 0} ${object.w / 2} ${object.h / 2})`}
         >
           {selected === object.id && (

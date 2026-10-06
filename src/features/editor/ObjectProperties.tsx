@@ -6,9 +6,11 @@ import type { EditorAction } from './editorModel'
 import { findItem } from '../catalog/catalog'
 import { ObjectThumbnail } from '../catalog/ObjectArt'
 import { sizeLimits } from './geometry'
+import { isDesk, supportingDesk } from './surfaces'
 
 interface Props {
   object: SceneObject
+  objects: SceneObject[]
   update: (patch: Partial<SceneObject>) => void
   duplicate: () => void
   remove: () => void
@@ -83,6 +85,7 @@ const swatches = [
 
 export function ObjectProperties({
   object,
+  objects,
   update,
   duplicate,
   remove,
@@ -91,6 +94,11 @@ export function ObjectProperties({
 }: Props) {
   const item = findItem(object.kind)
   const limits = sizeLimits[object.kind]
+  const attached = objects.filter((item) => item.attachedTo === object.id)
+  const available = objects.filter(
+    (item) =>
+      !item.attachedTo && supportingDesk(item, objects)?.id === object.id,
+  )
   return (
     <>
       <div className="selected-preview">
@@ -149,6 +157,44 @@ export function ObjectProperties({
         Posições e tamanhos em unidades do desenho (u). A profundidade mede o
         espaço da peça no piso.
       </p>
+      {isDesk(object) && (
+        <div className="equipment-group">
+          <h4>Seu setup acompanha a mesa</h4>
+          <p>
+            {attached.length
+              ? `${attached.length} equipamentos vinculados. Mova ou gire a mesa para levar o conjunto.`
+              : 'Vincule os equipamentos que estão sobre esta mesa.'}
+          </p>
+          <button
+            disabled={!available.length}
+            onClick={() => dispatch({ type: 'attach', id: object.id })}
+          >
+            {attached.length
+              ? 'Vincular novos equipamentos'
+              : 'Mover com equipamentos'}
+          </button>
+          {attached.length > 0 && (
+            <button onClick={() => dispatch({ type: 'detach', id: object.id })}>
+              Desvincular equipamentos
+            </button>
+          )}
+          <small>
+            Redimensionar altera só a mesa. Peças que saem do tampo são
+            desvinculadas.
+          </small>
+        </div>
+      )}
+      {object.attachedTo && (
+        <div className="equipment-group">
+          <p>
+            Vinculado à mesa. Você pode ajustar esta peça separadamente; ela
+            acompanha a mesa enquanto estiver sobre o tampo.
+          </p>
+          <button onClick={() => dispatch({ type: 'detach', id: object.id })}>
+            Desvincular da mesa
+          </button>
+        </div>
+      )}
       <fieldset className="color-options">
         <legend>Cor da peça</legend>
         <div>

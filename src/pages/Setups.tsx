@@ -200,7 +200,11 @@ export function Setups() {
                   to={`/editor?setup=${encodeURIComponent(setup.id)}`}
                   aria-label={`Abrir ${setup.name}`}
                 >
-                  <RoomScene scene={setup.scene} objects={setup.objects} />
+                  <RoomScene
+                    scene={setup.scene}
+                    objects={setup.objects}
+                    appearance={setup.appearance}
+                  />
                 </Link>
                 <div className="saved-setup-details">
                   <h2>

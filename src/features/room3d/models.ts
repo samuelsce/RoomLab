@@ -1,8 +1,10 @@
 import * as THREE from 'three'
-import { box, cylinder, glow, material, tabletop } from './primitives'
-import { buildChair } from './chair'
+import { box, cylinder, glow, material, tabletop } from './primitives.ts'
+import { buildChair } from './chair.ts'
 import type { SceneName, SceneObject } from '../editor/scenes'
-import { projectObject } from './projection'
+import { projectObject } from './projection.ts'
+import { defaultAppearance, floors } from '../editor/appearance.ts'
+import type { RoomAppearance } from '../editor/appearance'
 
 function screenTexture(gamer: boolean) {
   const canvas = document.createElement('canvas')
@@ -40,23 +42,26 @@ export function buildRoom(
   objects: SceneObject[],
   scene: SceneName,
   night: boolean,
+  appearance: RoomAppearance = defaultAppearance(scene),
 ) {
   const root = new THREE.Group()
   const gamer = scene === 'gamer'
-  const wall = gamer ? '#34425b' : '#e3e8e4'
+  const wall = appearance.wall
+  const floor = floors[appearance.floor]
+  const stone = appearance.floor === 'stone'
   const trim = gamer ? '#192639' : '#f4f4ed'
-  box(root, [5.4, 0.2, 4.28], [0, -0.1, 0], gamer ? '#29364b' : '#b19474')
+  box(root, [5.4, 0.2, 4.28], [0, -0.1, 0], floor.base)
   // Slight variations in the individual floorboards make the material legible.
-  for (let row = 0; row < 16; row++) {
-    for (let col = 0; col < 4; col++) {
-      const w = 1.305
+  for (let row = 0; row < (stone ? 8 : 16); row++) {
+    for (let col = 0; col < (stone ? 8 : 4); col++) {
+      const w = stone ? 0.6525 : 1.305
+      const d = stone ? 0.512 : 0.256
       box(
         root,
-        [w - 0.012, 0.018, 0.25],
-        [-2.61 + w / 2 + col * w, 0.009, -1.925 + row * 0.256],
-        gamer
-          ? ['#7c7169', '#8a7f75', '#84796f'][(row + col) % 3]
-          : ['#c6ab88', '#d4b995', '#cdb18c'][(row + col) % 3],
+        [w - 0.012, 0.018, d - 0.006],
+        [-2.61 + w / 2 + col * w, 0.009, -2.053 + d / 2 + row * d],
+        floor.colors[(row + col) % 3],
+        floor.roughness,
       )
     }
   }
@@ -104,7 +109,12 @@ export function buildRoom(
       )
     }
   }
-  const texture = screenTexture(gamer)
+  // Rooms without screens do not allocate an unreferenced GPU texture.
+  const texture = objects.some(
+    (object) => object.kind === 'monitor' || object.kind === 'dual-monitor',
+  )
+    ? screenTexture(gamer)
+    : null
   for (const object of objects) {
     const p = projectObject(object, objects)
     const group = new THREE.Group()

@@ -125,3 +125,7 @@ Assets próprios em SVG; registrar licença e autoria de qualquer material exter
 A skill `frontend-design` foi carregada pelo comando solicitado pelo usuário: `npx skills use "https://github.com/anthropics/skills" --skill "frontend-design"`. A saída completa foi lida e suas instruções foram aplicadas ao planejamento em duas passagens: tokens/layout/princípios e revisão contra o briefing.
 
 Origem: [anthropics/skills](https://github.com/anthropics/skills). Diretório de apoio retornado nesta execução: `C:\Users\samue\AppData\Local\Temp\skills-use-adybS1\frontend-design`. Referências relativas dessa skill devem ser resolvidas a partir desse diretório. Esse caminho é temporário e não é uma dependência do aplicativo.
+
+## Revisão do painel de acabamentos, 6 de outubro de 2026
+
+A skill `frontend-design-references` orientou a consulta ao [painel inferior do Recollect no 60fps](https://60fps.design/shots/recollect-pro-bottom-sheet-to-page-interaction). A inspeção dos frames do vídeo confirmou a composição com tela de origem visível acima do painel e ação principal no rodapé. No RoomLab, esse princípio foi adaptado ao painel móvel de acabamentos, com altura limitada, amostras roláveis e controles de fechar/concluir sempre acessíveis. A identidade existente foi preservada. O [guia de agrupamento e ambiente](AGRUPAMENTO-AMBIENTE.md) registra a implementação e as capturas em três tamanhos.

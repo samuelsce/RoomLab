@@ -2,6 +2,7 @@ import { useEffect, useEffectEvent, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import type { SceneName, SceneObject } from '../editor/scenes'
+import type { RoomAppearance } from '../editor/appearance'
 import { buildRoom, disposeRoom } from './models'
 import {
   createSelectionMarker,
@@ -12,6 +13,7 @@ import {
 
 interface Props {
   scene: SceneName
+  appearance: RoomAppearance
   objects: SceneObject[]
   night: boolean
   command: { action: 'left' | 'right' | 'reset'; version: number }
@@ -35,6 +37,7 @@ interface Engine {
 
 export default function RoomCanvas({
   scene,
+  appearance,
   objects,
   night,
   command,
@@ -295,7 +298,7 @@ export default function RoomCanvas({
       current.scene.remove(current.root)
       disposeRoom(current.root)
     }
-    current.root = buildRoom(objects, scene, night)
+    current.root = buildRoom(objects, scene, night, appearance)
     current.scene.add(current.root)
     current.fill.intensity = night ? 1.3 : 2.2
     current.sun.intensity = night ? 1.8 : 3
@@ -303,7 +306,7 @@ export default function RoomCanvas({
     current.blue.intensity = scene === 'gamer' && night ? 12 : 0
     current.violet.intensity = scene === 'gamer' && night ? 14 : 0
     current.render()
-  }, [objects, scene, night])
+  }, [objects, scene, night, appearance])
 
   useEffect(() => {
     const current = engine.current
@@ -315,7 +318,7 @@ export default function RoomCanvas({
       : undefined
     updateSelectionMarker(current.marker, target)
     current.render()
-  }, [objects, scene, night, selectedId, editable])
+  }, [objects, scene, night, appearance, selectedId, editable])
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -376,6 +379,8 @@ export default function RoomCanvas({
       aria-label="Visualização 3D do quarto"
       data-scene={scene}
       data-object-count={objects.length}
+      data-wall={appearance.wall}
+      data-floor={appearance.floor}
       data-selected-id={selectedId}
       tabIndex={editable ? 0 : undefined}
       aria-description={

@@ -26,5 +26,6 @@ Estes documentos registram decisões no momento de cada entrega. Referências a 
 | [Refinamento 3D](REFINAMENTO-3D.md) | Proporções, construção da cadeira, apoios e acabamento do mobiliário |
 | [Primeira entrega da revisão de UX](CORRECOES-UX.md) | Navegação, isolamento dos diálogos e propriedades compactas sem perder o quarto de vista |
 | [Segunda entrega da revisão: seleção 3D](SELECAO-3D.md) | Seleção direta, feedback visual, gestos de câmera, PNG sem destaque e dimensões coerentes |
+| [Terceira entrega da revisão: agrupamento e ambiente](AGRUPAMENTO-AMBIENTE.md) | Equipamentos acompanhando a mesa, tintas, pisos e persistência da composição |
 
 Os exercícios de cada entrega ajudam a modificar o projeto e explicar suas decisões. As funcionalidades e limitações atuais estão descritas no README e na arquitetura.

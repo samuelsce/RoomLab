@@ -10,6 +10,7 @@ export interface SceneObject {
   h: number
   color: string
   rotation?: number
+  attachedTo?: string
 }
 const base: SceneObject[] = [
   { id: 'rug', kind: 'rug', x: 206, y: 262, w: 316, h: 210, color: '#8da5b1' },
