@@ -1465,6 +1465,57 @@ h2 {
   }
 }
 @media (max-width: 900px) {
+  .editor-page {
+    --properties-height: min(38dvh, 340px);
+    --docked-plan-height: clamp(110px, calc(62dvh - 240px), 280px);
+  }
+  .editor-page.properties-docked {
+    padding-bottom: calc(var(--properties-height) + 50px);
+  }
+  .properties-docked .properties-panel.mobile-active {
+    position: fixed;
+    inset: auto 0 0;
+    height: var(--properties-height);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 20;
+    background: #fff;
+    padding-bottom: max(22px, env(safe-area-inset-bottom));
+  }
+  .properties-docked .mobile-panel-switch {
+    position: fixed;
+    inset: auto 0 var(--properties-height);
+    z-index: 21;
+    box-shadow: 0 -6px 18px #202b3812;
+  }
+  .properties-docked .properties-panel .panel-heading {
+    margin-bottom: 12px;
+  }
+  .properties-docked .selected-description,
+  .properties-docked .selected-preview,
+  .properties-docked .scene-hint,
+  .properties-docked .grid-note {
+    display: none;
+  }
+  .properties-docked
+    .scene-viewport:has(> .room-preview)
+    + .scene-toolbar
+    .zoom-controls {
+    display: none;
+  }
+  .properties-docked .scene-viewport {
+    height: var(--docked-plan-height);
+  }
+  .properties-docked .zoomed-scene {
+    width: min(100%, calc(var(--docked-plan-height) * 1.24));
+  }
+  .properties-docked .scene-viewport:has(> .room-preview) {
+    height: auto;
+  }
+  .scene-panel,
+  .catalog-panel {
+    scroll-margin-top: 8px;
+  }
   .hero {
     gap: 25px;
     padding-top: 25px;

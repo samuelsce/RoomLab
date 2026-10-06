@@ -24,5 +24,6 @@ Estes documentos registram decisões no momento de cada entrega. Referências a 
 | [Entrega 04](ENTREGA-04.md) | Compartilhamento e GitHub Pages |
 | [Entrega 05](ENTREGA-05.md) | Estúdio 3D, quarto gamer, animações e projeção |
 | [Refinamento 3D](REFINAMENTO-3D.md) | Proporções, construção da cadeira, apoios e acabamento do mobiliário |
+| [Primeira entrega da revisão de UX](CORRECOES-UX.md) | Navegação, isolamento dos diálogos e propriedades compactas sem perder o quarto de vista |
 
 Os exercícios de cada entrega ajudam a modificar o projeto e explicar suas decisões. As funcionalidades e limitações atuais estão descritas no README e na arquitetura.

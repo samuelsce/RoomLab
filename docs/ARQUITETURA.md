@@ -47,6 +47,14 @@ Durante um arrasto, ações de preview atualizam a representação. Ao concluir,
 
 [`geometry.ts`](../src/features/editor/geometry.ts) calcula limites por tipo, dimensões após rotação, posição dentro do quarto e alinhamento à grade. Essas funções não dependem de React ou do DOM e são verificadas por testes unitários.
 
+## Navegação, foco e telas compactas
+
+[`SectionLink.tsx`](../src/components/SectionLink.tsx) gera endereços pelo roteador e, na ativação normal de um link dentro da página, faz rolagem e foco sem alterar a rota. Isso preserva o rascunho do editor e o fragmento de dados dos snapshots. Os destinos recebem `tabIndex={-1}`. Links abertos com modificadores continuam usando o endereço gerado para o modo de roteamento atual.
+
+O manipulador de atalhos do editor ignora eventos já tratados, campos de entrada, gestos em andamento e diálogos nativos abertos. Os diálogos mantêm seus próprios controles de teclado e retorno de foco.
+
+Até 900 pixels de largura, adicionar uma peça, selecionar pelo teclado ou abrir Propriedades ativa um painel inferior com rolagem própria. A vista usa a altura disponível acima do painel. Seleção pelo ponteiro preserva o layout existente durante o gesto, para não alterar a transformação de coordenadas. Abrir Catálogo devolve o painel ao fluxo e leva a lista de peças à vista. Veja o [registro da revisão de UX](CORRECOES-UX.md) e os testes de [interação compacta](../tests/touch.spec.ts).
+
 ## Representação 3D
 
 [`projection.ts`](../src/features/room3d/projection.ts) converte o centro da peça para X/Z no piso e a rotação para o eixo vertical. Equipamentos recebem altura de bancada quando seu centro está sobre uma mesa, considerando a rotação da mesa. O tapete também funciona como uma superfície de apoio; quando a mesa está sobre ele, seus equipamentos acompanham a mesma elevação.

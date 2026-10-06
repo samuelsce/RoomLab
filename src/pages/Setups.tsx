@@ -122,7 +122,7 @@ export function Setups() {
           Início
         </Link>
       </header>
-      <main id="main-content" className="setups-page">
+      <main id="main-content" className="setups-page" tabIndex={-1}>
         <div className="setups-heading">
           <div>
             <h1>Meus setups</h1>
