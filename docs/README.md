@@ -23,5 +23,6 @@ Estes documentos registram decisões no momento de cada entrega. Referências a 
 | [Entrega 03](ENTREGA-03.md) | Biblioteca, armazenamento, backups e erros |
 | [Entrega 04](ENTREGA-04.md) | Compartilhamento e GitHub Pages |
 | [Entrega 05](ENTREGA-05.md) | Estúdio 3D, quarto gamer, animações e projeção |
+| [Refinamento 3D](REFINAMENTO-3D.md) | Proporções, construção da cadeira, apoios e acabamento do mobiliário |
 
 Os exercícios de cada entrega ajudam a modificar o projeto e explicar suas decisões. As funcionalidades e limitações atuais estão descritas no README e na arquitetura.

@@ -37,6 +37,32 @@ try {
       fullPage: true,
       animations: 'disabled',
     })
+    if (name === 'desktop') {
+      await page
+        .getByRole('button', {
+          name: 'Editar cadeira de escritório na lista',
+          exact: true,
+        })
+        .click()
+      const rotation = page.getByRole('spinbutton', { name: 'Rotação (°)' })
+      await rotation.fill('180')
+      await rotation.press('Enter')
+      await page
+        .getByRole('button', { name: 'Luz noturna', exact: true })
+        .click()
+      await page.evaluate(
+        () =>
+          new Promise((resolve) =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve)),
+          ),
+      )
+      await page
+        .getByRole('img', { name: 'Visualização 3D do quarto' })
+        .screenshot({
+          path: 'docs/screenshots/chair-front-desktop.png',
+          animations: 'disabled',
+        })
+    }
     console.log(
       JSON.stringify({
         name,

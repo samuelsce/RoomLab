@@ -77,7 +77,7 @@ npm run test:pages -- --workers=2
 npm run build
 ```
 
-A validação da entrega 3D aprovou **21 testes unitários, 72 casos de navegador e 2 casos do build de Pages**. Seis casos adicionais são ignorados nos perfis em que não se aplicam. Os perfis de desktop, tablet e celular usam Chromium; não representam certificação em dispositivos físicos ou em todos os navegadores.
+A validação local do [refinamento 3D](docs/REFINAMENTO-3D.md) aprovou **26 testes unitários, 72 casos de navegador e 2 casos do build de Pages**. Seis casos adicionais são ignorados nos perfis em que não se aplicam. Os perfis de desktop, tablet e celular usam Chromium; não representam certificação em dispositivos físicos ou em todos os navegadores.
 
 O [workflow](.github/workflows/pages.yml) executa lint, formatação, testes e build antes de publicar. [Execução validada da entrega 3D](https://github.com/samuelsce/RoomLab/actions/runs/37417938419). `npm run test:live` verifica a demo pública, o 3D gamer, compartilhamento em sessão independente e cópia editável.
 

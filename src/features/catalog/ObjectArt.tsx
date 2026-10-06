@@ -85,12 +85,30 @@ export function ObjectArt({ kind, color }: Props) {
     case 'chair':
       return (
         <g>
-          <path
-            d="M60 47v40m0-5L23 91m37-9 36 9m-36-9L34 61m26 21 27-20"
-            stroke="#45515b"
-            strokeWidth="6"
-            strokeLinecap="round"
-          />
+          {[-90, -18, 54, 126, 198].map((angle) => {
+            const radians = (angle * Math.PI) / 180
+            const x = 60 + Math.cos(radians) * 39
+            const y = 70 + Math.sin(radians) * 24
+            return (
+              <g key={angle}>
+                <path
+                  d={`M60 70L${x} ${y}`}
+                  stroke="#45515b"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                />
+                <rect
+                  x={x - 5}
+                  y={y - 3}
+                  width="10"
+                  height="6"
+                  rx="2"
+                  fill="#25313b"
+                  transform={`rotate(${angle + 90} ${x} ${y})`}
+                />
+              </g>
+            )
+          })}
           <rect x="28" y="32" width="64" height="46" rx="17" fill={color} />
           <rect x="22" y="16" width="76" height="30" rx="12" fill={color} />
           <path d="M31 28h58" stroke="white" opacity=".17" strokeWidth="3" />
