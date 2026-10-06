@@ -1,140 +1,208 @@
+import { useState } from 'react'
 import { Link } from 'react-router'
 import {
-  MousePointer2,
-  Palette,
-  LayoutTemplate,
   ArrowUpRight,
   Code2,
+  Gamepad2,
+  Leaf,
+  Sun,
+  Move,
+  Box,
+  Share2,
 } from 'lucide-react'
 import { Brand } from '../components/Brand'
-import { RoomScene } from '../features/editor/RoomScene'
+import { RoomPreview } from '../features/room3d/RoomPreview'
 import type { SceneName } from '../features/editor/scenes'
 
-const examples: { scene: SceneName; name: string; detail: string }[] = [
+const environments = [
   {
-    scene: 'study',
-    name: 'Mesa para estudar',
-    detail: 'Madeira, luz natural e espaço para focar.',
+    scene: 'gamer',
+    name: 'Depois da meia-noite',
+    label: 'Quarto gamer',
+    icon: Gamepad2,
+    detail:
+      'Dois monitores, vidro no gabinete e luz RGB. Um espaço para entrar no jogo e desligar do resto.',
+    materials: ['Grafite', 'LED ciano', 'Tecido'],
+    color: '#927cf6',
   },
   {
-    scene: 'dual',
-    name: 'Setup com dois monitores',
-    detail: 'Uma bancada para colocar as ideias em ação.',
+    scene: 'study',
+    name: 'Ideias à luz do dia',
+    label: 'Luz natural',
+    icon: Sun,
+    detail:
+      'Madeira, luz pela janela e uma mesa com espaço para criar. O seu próprio lugar de foco.',
+    materials: ['Madeira', 'Metal', 'Luz natural'],
+    color: '#bc9365',
   },
   {
     scene: 'plants',
-    name: 'Cantinho com plantas',
-    detail: 'Um pouco de verde entre uma tarefa e outra.',
+    name: 'Uma pausa no verde',
+    label: 'Com plantas',
+    icon: Leaf,
+    detail:
+      'Folhas, texturas suaves e um cantinho que respira. Para trabalhar em outro ritmo.',
+    materials: ['Folhagem', 'Madeira', 'Trama'],
+    color: '#67836d',
   },
-]
+  {
+    scene: 'dual',
+    name: 'Mais espaço para criar',
+    label: 'Dois monitores',
+    icon: Box,
+    detail:
+      'Uma bancada organizada e duas telas para tirar as próximas ideias do papel.',
+    materials: ['Madeira', 'Metal', 'Tecido'],
+    color: '#617b98',
+  },
+] satisfies {
+  scene: SceneName
+  name: string
+  label: string
+  icon: typeof Sun
+  detail: string
+  materials: string[]
+  color: string
+}[]
 
 export function Home() {
+  const [selected, setSelected] = useState<SceneName>('gamer')
+  const environment = environments.find((item) => item.scene === selected)!
   return (
-    <>
+    <div className="home-redesign">
       <header className="home-header">
         <Brand />
         <nav aria-label="Navegação principal">
           <Link to="/setups">Meus setups</Link>
-          <a href="#examples">Ver exemplos</a>
+          <a href="#examples">Os ambientes</a>
           <Link to="/editor" className="button button-small">
             Abrir editor <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
         </nav>
       </header>
       <main id="main-content">
-        <section className="hero">
-          <div className="hero-copy">
+        <section className="studio-hero">
+          <div className="studio-copy">
             <h1>
-              Monte um quarto
+              Seu quarto.
               <br />
-              que combina
-              <br />
-              com seu setup.
+              Seu universo.
             </h1>
             <p>
-              Escolha os móveis, ajuste as cores e encontre espaço para tudo.
-              Seu próximo cantinho começa aqui.
+              O setup dos seus sonhos começa com um pouco de espaço para
+              experimentar.
             </p>
             <div className="hero-actions">
-              <Link className="button button-primary" to="/editor">
+              <Link
+                className="button button-primary"
+                to={`/editor?scene=${selected}`}
+              >
                 Montar meu setup <ArrowUpRight size={18} aria-hidden="true" />
               </Link>
               <Link className="text-link" to="/editor?scene=empty">
                 Começar com quarto vazio
               </Link>
             </div>
-            <p className="prototype-caption">
-              Adicione peças, experimente cores e organize o quarto.
+            <div className="studio-note">
+              <Move size={18} aria-hidden="true" />
+              <p>
+                Mova as peças. Escolha as cores.
+                <br />
+                Veja seu espaço ganhar vida.
+              </p>
+            </div>
+          </div>
+          <div className="studio-stage">
+            <div className="stage-heading">
+              <span>{environment.name}</span>
+              <span>Explore em 3D</span>
+            </div>
+            <RoomPreview scene={selected} />
+            <div
+              className="environment-picker"
+              aria-label="Escolher ambiente de inspiração"
+            >
+              {environments.map(({ scene, label, icon: Icon }) => (
+                <button
+                  key={scene}
+                  aria-pressed={selected === scene}
+                  onClick={() => setSelected(scene)}
+                >
+                  <Icon size={17} aria-hidden="true" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+        <section
+          className="environment-story"
+          id="examples"
+          aria-labelledby="environment-heading"
+        >
+          <div className="environment-copy" key={selected}>
+            <h2 id="environment-heading">{environment.name}</h2>
+            <p>{environment.detail}</p>
+          </div>
+          <div className="environment-details">
+            <div
+              className="material-samples"
+              aria-label="Materiais do ambiente"
+            >
+              {environment.materials.map((label, i) => (
+                <span key={label}>
+                  <i
+                    style={{
+                      background:
+                        i === 0
+                          ? environment.color
+                          : i === 1
+                            ? '#59dcd6'
+                            : '#a7b4be',
+                    }}
+                  />
+                  {label}
+                </span>
+              ))}
+            </div>
+            <Link className="button" to={`/editor?scene=${selected}`}>
+              Personalizar {environment.label.toLowerCase()}{' '}
+              <ArrowUpRight size={18} aria-hidden="true" />
+            </Link>
+          </div>
+        </section>
+        <section className="creation-guide" aria-label="Como montar seu quarto">
+          <div className="guide-title">
+            <h2>
+              Do primeiro clique
               <br />
-              Salve seu setup neste navegador e continue depois.
+              ao seu cantinho.
+            </h2>
+            <p>Crie, teste e volte quando quiser.</p>
+          </div>
+          <div>
+            <Move aria-hidden="true" />
+            <h3>Encontre o lugar</h3>
+            <p>
+              Arraste, gire e ajuste as peças na planta. Cada detalhe fica nas
+              suas mãos.
             </p>
           </div>
-          <div className="hero-room">
-            <div className="room-topline">
-              <span>Mesa para estudar</span>
-              <span>Vista superior</span>
-            </div>
-            <RoomScene />
-            <div className="room-bottomline">
-              <span className="material-label">
-                <i />
-                Madeira natural
-              </span>
-              <Link to="/editor?scene=study">
-                Explorar este quarto{' '}
-                <ArrowUpRight size={15} aria-hidden="true" />
-              </Link>
-            </div>
-          </div>
-        </section>
-        <section className="intro-strip" aria-label="O que você pode explorar">
           <div>
-            <MousePointer2 aria-hidden="true" />
-            <span>
-              <strong>Cada peça no seu lugar</strong>
-              <span>Uma cena simples de explorar.</span>
-            </span>
+            <Box aria-hidden="true" />
+            <h3>Olhe de outro ângulo</h3>
+            <p>
+              Troque para o 3D e veja os móveis, as sombras e a luz compondo o
+              ambiente.
+            </p>
           </div>
           <div>
-            <Palette aria-hidden="true" />
-            <span>
-              <strong>Detalhes que fazem diferença</strong>
-              <span>Materiais, cores e objetos com personalidade.</span>
-            </span>
-          </div>
-          <div>
-            <LayoutTemplate aria-hidden="true" />
-            <span>
-              <strong>Uma ideia para começar</strong>
-              <span>Inspire-se em um quarto pronto.</span>
-            </span>
-          </div>
-        </section>
-        <section className="examples-section" id="examples">
-          <div className="section-heading">
-            <div>
-              <h2>Qual é o seu ponto de partida?</h2>
-              <p>Três composições, muitas possibilidades.</p>
-            </div>
-            <span>Feito para explorar</span>
-          </div>
-          <div className="examples-grid">
-            {examples.map((example) => (
-              <Link
-                className="example"
-                to={`/editor?scene=${example.scene}`}
-                key={example.scene}
-              >
-                <div className="example-scene">
-                  <RoomScene scene={example.scene} />
-                </div>
-                <div className="example-title">
-                  <h3>{example.name}</h3>
-                  <ArrowUpRight size={20} aria-hidden="true" />
-                </div>
-                <p>{example.detail}</p>
-              </Link>
-            ))}
+            <Share2 aria-hidden="true" />
+            <h3>Guarde sua versão</h3>
+            <p>
+              Salve neste navegador ou crie um link para mostrar o quarto que
+              você imaginou.
+            </p>
           </div>
         </section>
       </main>
@@ -150,6 +218,6 @@ export function Home() {
           Conheça o projeto<span className="sr-only"> (abre em outra aba)</span>
         </a>
       </footer>
-    </>
+    </div>
   )
 }

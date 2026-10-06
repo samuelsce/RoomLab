@@ -79,3 +79,25 @@ export async function exportPng(svg: SVGSVGElement, name: string) {
     URL.revokeObjectURL(url)
   }
 }
+
+export async function export3dPng(
+  source: HTMLCanvasElement,
+  name: string,
+  background: string,
+) {
+  // Render and copy synchronously before the browser clears the WebGL buffer.
+  source.dispatchEvent(new Event('roomlab:snapshot'))
+  const canvas = document.createElement('canvas')
+  canvas.width = source.width
+  canvas.height = source.height
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('Não foi possível gerar a imagem 3D.')
+  context.fillStyle = background
+  context.fillRect(0, 0, canvas.width, canvas.height)
+  context.drawImage(source, 0, 0)
+  const blob = await new Promise<Blob | null>((resolve) =>
+    canvas.toBlob(resolve, 'image/png'),
+  )
+  if (!blob) throw new Error('Não foi possível gerar a imagem 3D.')
+  download(blob, `${filename(name)}-3d.png`)
+}
