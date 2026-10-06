@@ -4,6 +4,8 @@
 
 Antes de cada etapa, explicar em português o resultado esperado, os arquivos envolvidos e a decisão técnica principal. Durante o trabalho, comunicar descobertas e mudanças relevantes. Ao terminar, mostrar o que mudou, como experimentar, como foi verificado e quais commits foram criados.
 
+Evitar travessões nas explicações, documentação nova e textos da interface, conforme preferência do autor.
+
 Não transformar a entrega em uma aula sobre cada linha: concentrar explicações nos conceitos que permitem ao autor do portfólio entender, modificar e defender o projeto em entrevista.
 
 ## Branches e commits
@@ -42,4 +44,4 @@ Os exercícios acompanham entregas concretas, sem bloquear o desenvolvimento. Re
 
 ## Situação desta entrega
 
-Planejamento e primeira entrega documentados. A fundação React, home, protótipo visual e testes de fluxo estão implementados em `feat/app-foundation`; detalhes em [ENTREGA-01.md](ENTREGA-01.md). CI, hospedagem, manipulação e persistência ainda não foram implementados. A skill `frontend-design` foi aplicada ao planejamento e à revisão por screenshots desta entrega.
+Planejamento e duas entregas documentados. A fundação está em `feat/app-foundation` e o editor funcional em `feat/room-editor`; detalhes em [ENTREGA-01.md](ENTREGA-01.md) e [ENTREGA-02.md](ENTREGA-02.md). Persistência, compartilhamento, CI e hospedagem permanecem como próximas etapas. A direção da skill `frontend-design` foi mantida e revisada por screenshots.

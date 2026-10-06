@@ -86,4 +86,6 @@ Antes de declarar desempenho, medir com uma cena de 50 objetos e registrar dispo
 
 A primeira entrega foi implementada em `feat/app-foundation`, com home, estrutura do editor, composições e catálogo. Ver [ENTREGA-01.md](ENTREGA-01.md). A validação visual foi feita por screenshots; a avaliação do autor do projeto pode orientar ajustes antes da próxima etapa.
 
-Próximo passo: `feat/room-editor`, com inclusão e movimento de objetos e conversão de coordenadas. A representação atual é ilustrada em 2D e pode ser revisada antes da manipulação completa.
+A segunda entrega está implementada em `feat/room-editor`, com adição, manipulação, cores, camadas e histórico. Foram mantidos SVG nativo e `useReducer`, conforme a decisão e as limitações em [ENTREGA-02.md](ENTREGA-02.md).
+
+Próximo passo: `feat/local-setups`, com persistência local, nomes, biblioteca de salvos e exportação. Links públicos serão implementados depois dessa etapa.
