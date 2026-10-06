@@ -45,3 +45,5 @@ Os exercícios acompanham entregas concretas, sem bloquear o desenvolvimento. Re
 ## Situação desta entrega
 
 Planejamento e quatro entregas documentados. A fundação está em `feat/app-foundation`, o editor funcional em `feat/room-editor`, a persistência em `feat/local-setups` e os links em `feat/setup-sharing`. Ver [ENTREGA-04.md](ENTREGA-04.md) para compartilhamento, workflow e publicação. A main permanece na base inicial. A publicação da branch de compartilhamento é permitida no ambiente github-pages, sem integrar código na main. A direção da skill `frontend-design` foi mantida e revisada por screenshots.
+
+A quinta entrega está em `feat/immersive-room-design`. O pedido de uma experiência mais criativa trouxe visualização 3D real, composição gamer e uma nova apresentação. A planta continua responsável pelo posicionamento. Ver [ENTREGA-05.md](ENTREGA-05.md) para projeção das coordenadas, materiais, desempenho, testes e exercícios. O ambiente Pages também permite esta branch; a main continua preservada.

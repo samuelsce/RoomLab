@@ -84,6 +84,8 @@ Antes de declarar desempenho, medir com uma cena de 50 objetos e registrar dispo
 
 3D real, colaboração simultânea, IA, checkout, orçamento de móveis, catálogo infinito, login obrigatório e editor arquitetônico de plantas. Podem ser avaliados depois de concluir o fluxo principal.
 
+Revisão da quinta entrega: após concluir o fluxo principal, o pedido de mais criatividade antecipou a visualização 3D real. Ela representa o documento atual e permite explorar a câmera; a planta permanece como ferramenta de posicionamento. Colaboração, orçamento, IA e editor arquitetônico continuam fora do escopo. Ver [ENTREGA-05.md](ENTREGA-05.md).
+
 ## Próxima etapa
 
 A primeira entrega foi implementada em `feat/app-foundation`, com home, estrutura do editor, composições e catálogo. Ver [ENTREGA-01.md](ENTREGA-01.md). A validação visual foi feita por screenshots; a avaliação do autor do projeto pode orientar ajustes antes da próxima etapa.
