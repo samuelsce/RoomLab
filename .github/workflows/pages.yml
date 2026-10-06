@@ -2,7 +2,7 @@ name: Validate and publish RoomLab
 
 on:
   push:
-    branches: [main, feat/setup-sharing]
+    branches: [main, feat/setup-sharing, feat/immersive-room-design]
     paths-ignore: ['docs/**', 'README.md']
   pull_request:
     branches: [main]

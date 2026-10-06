@@ -12,6 +12,11 @@ try {
   await page
     .getByRole('link', { name: 'Montar meu setup', exact: true })
     .click()
+  await page.getByRole('button', { name: 'Ver em 3D', exact: true }).click()
+  await page.locator('.room-preview[data-ready="true"]').waitFor()
+  await expect(
+    page.getByRole('img', { name: 'Visualização 3D do quarto' }),
+  ).toHaveAttribute('data-scene', 'gamer')
   await page.getByLabel('Nome do setup').fill('Quarto para testar o link')
   await page.getByRole('button', { name: 'Compartilhar', exact: true }).click()
   await page.getByRole('button', { name: 'Gerar link', exact: true }).click()
@@ -26,9 +31,13 @@ try {
       exact: true,
     }),
   ).toBeVisible()
+  await recipient.locator('.room-preview[data-ready="true"]').waitFor()
   expect(await recipient.evaluate(() => localStorage.length)).toBe(0)
   await recipient
     .getByRole('button', { name: 'Editar uma cópia', exact: true })
+    .click()
+  await recipient
+    .getByRole('button', { name: 'Planta 2D', exact: true })
     .click()
   await expect(recipient.locator('[data-object-id]')).toHaveCount(10)
   await recipient.reload()

@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
+  outputDir: './test-results-pages',
   testDir: './tests',
   testMatch: '**/pages.spec.ts',
   reporter: 'list',
