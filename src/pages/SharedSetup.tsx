@@ -132,9 +132,14 @@ function SharedViewer({ token }: { token: string }) {
                 <RoomPreview
                   scene={document.scene}
                   objects={document.objects}
+                  appearance={document.appearance}
                 />
               ) : (
-                <RoomScene scene={document.scene} objects={document.objects} />
+                <RoomScene
+                  scene={document.scene}
+                  objects={document.objects}
+                  appearance={document.appearance}
+                />
               )}
             </div>
             <div className="shared-bottom">

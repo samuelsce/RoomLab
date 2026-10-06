@@ -35,6 +35,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { exportJson, exportPng, export3dPng } from '../features/setups/export'
 import { ShareDialog } from '../features/sharing/ShareDialog'
 import type { SharedDocument } from '../features/sharing/document'
+import { EnvironmentDialog } from '../features/editor/EnvironmentDialog'
 
 export function Editor() {
   const [params] = useSearchParams()
@@ -87,6 +88,8 @@ function EditorLoader({
       return { setup: undefined, error: storageMessage(error) }
     }
   })
+  // Saving updates the URL without remounting this workspace. Keep its preset.
+  const [workspaceScene] = useState(loaded.setup?.scene ?? scene)
   if (loaded.error)
     return (
       <main id="main-content" className="not-found" tabIndex={-1}>
@@ -99,7 +102,7 @@ function EditorLoader({
     )
   return (
     <EditorWorkspace
-      scene={loaded.setup?.scene ?? scene}
+      scene={workspaceScene}
       initial={loaded.setup}
       workspaceKey={workspaceKey}
     />
@@ -115,16 +118,18 @@ function EditorWorkspace({
   initial?: SavedSetup
   workspaceKey: string
 }) {
-  const editor = useRoomEditor(scene, initial?.objects)
+  const editor = useRoomEditor(scene, initial?.objects, initial?.appearance)
   const project = useSetupSave(
     scene,
     editor.state.objects,
     initial,
     workspaceKey,
+    editor.state.appearance,
   )
   const exportScene = useRef<HTMLDivElement>(null)
   const previewScene = useRef<HTMLDivElement>(null)
   const [sharing, setSharing] = useState<SharedDocument | null>(null)
+  const [environmentOpen, setEnvironmentOpen] = useState(false)
   const [exporting, setExporting] = useState(false)
   const [exportMessage, setExportMessage] = useState('')
   const [exportError, setExportError] = useState('')
@@ -163,6 +168,7 @@ function EditorWorkspace({
           name,
           scene,
           objects: editor.state.objects,
+          appearance: editor.state.appearance,
           createdAt: project.saved?.createdAt ?? now,
           updatedAt: now,
           revision: crypto.randomUUID(),
@@ -344,6 +350,7 @@ function EditorWorkspace({
                 name: project.name,
                 scene,
                 objects,
+                appearance: state.appearance,
               })
             }
           >
@@ -422,6 +429,11 @@ function EditorWorkspace({
         <p className="sr-only" role="status">
           {editor.message}
         </p>
+        {state.feedback && (
+          <p className="save-feedback save-error" role="status">
+            {state.feedback}
+          </p>
+        )}
         <div className="workspace">
           <aside
             ref={catalogPanel}
@@ -543,6 +555,7 @@ function EditorWorkspace({
                 <RoomPreview
                   scene={scene}
                   objects={objects}
+                  appearance={state.appearance}
                   selectedId={selectedObject?.id}
                   onSelect={(id) => {
                     const object = objects.find((item) => item.id === id)
@@ -559,6 +572,7 @@ function EditorWorkspace({
                     <RoomScene
                       scene={scene}
                       objects={objects}
+                      appearance={state.appearance}
                       selected={selectedObject?.id}
                       onSelect={selectObject}
                       onDeselect={() => select(null)}
@@ -588,6 +602,17 @@ function EditorWorkspace({
               )}
             </div>
             <div className="scene-toolbar">
+              <button
+                className="environment-trigger"
+                disabled={isDragging}
+                onClick={() => {
+                  roomPanel.current?.scrollIntoView({ block: 'start' })
+                  setEnvironmentOpen(true)
+                }}
+              >
+                <SlidersHorizontal size={17} aria-hidden="true" />
+                Personalizar ambiente
+              </button>
               <div className="editor-tools">
                 <button
                   aria-label="Desfazer"
@@ -690,6 +715,7 @@ function EditorWorkspace({
             {selectedObject ? (
               <ObjectProperties
                 object={selectedObject}
+                objects={objects}
                 update={update}
                 duplicate={duplicate}
                 remove={() => {
@@ -742,8 +768,20 @@ function EditorWorkspace({
       {sharing && (
         <ShareDialog document={sharing} onClose={() => setSharing(null)} />
       )}
+      {environmentOpen && (
+        <EnvironmentDialog
+          scene={scene}
+          appearance={state.appearance}
+          dispatch={dispatch}
+          onClose={() => setEnvironmentOpen(false)}
+        />
+      )}
       <div ref={exportScene} hidden aria-hidden="true">
-        <RoomScene scene={scene} objects={objects} />
+        <RoomScene
+          scene={scene}
+          objects={objects}
+          appearance={state.appearance}
+        />
       </div>
       {project.blocker.state === 'blocked' && (
         <ConfirmDialog
