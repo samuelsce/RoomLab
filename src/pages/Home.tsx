@@ -23,7 +23,7 @@ const environments = [
     detail:
       'Dois monitores, vidro no gabinete e luz RGB. Um espaço para entrar no jogo e desligar do resto.',
     materials: ['Grafite', 'LED ciano', 'Tecido'],
-    color: '#927cf6',
+    colors: ['#283548', '#59dcd6', '#657391'],
   },
   {
     scene: 'study',
@@ -33,7 +33,7 @@ const environments = [
     detail:
       'Madeira, luz pela janela e uma mesa com espaço para criar. O seu próprio lugar de foco.',
     materials: ['Madeira', 'Metal', 'Luz natural'],
-    color: '#bc9365',
+    colors: ['#b78d60', '#334452', '#e9dbc1'],
   },
   {
     scene: 'plants',
@@ -43,7 +43,7 @@ const environments = [
     detail:
       'Folhas, texturas suaves e um cantinho que respira. Para trabalhar em outro ritmo.',
     materials: ['Folhagem', 'Madeira', 'Trama'],
-    color: '#67836d',
+    colors: ['#48705a', '#b78d60', '#99ae95'],
   },
   {
     scene: 'dual',
@@ -53,7 +53,7 @@ const environments = [
     detail:
       'Uma bancada organizada e duas telas para tirar as próximas ideias do papel.',
     materials: ['Madeira', 'Metal', 'Tecido'],
-    color: '#617b98',
+    colors: ['#b78d60', '#334452', '#8da5b1'],
   },
 ] satisfies {
   scene: SceneName
@@ -62,7 +62,7 @@ const environments = [
   icon: typeof Sun
   detail: string
   materials: string[]
-  color: string
+  colors: string[]
 }[]
 
 export function Home() {
@@ -153,12 +153,7 @@ export function Home() {
                 <span key={label}>
                   <i
                     style={{
-                      background:
-                        i === 0
-                          ? environment.color
-                          : i === 1
-                            ? '#59dcd6'
-                            : '#a7b4be',
+                      background: environment.colors[i],
                     }}
                   />
                   {label}
