@@ -67,6 +67,10 @@ Até 900 pixels de largura, adicionar uma peça, selecionar pelo teclado ou abri
 
 [`RoomPreview.tsx`](../src/features/room3d/RoomPreview.tsx) apresenta carregamento, ações acessíveis e alternativa em planta se WebGL não estiver disponível. A lista e as propriedades permanecem em HTML, porque uma imagem 3D não substitui controles acessíveis.
 
+No editor, [`selection.ts`](../src/features/room3d/selection.ts) identifica a primeira interseção de um raio com o quarto e sobe até o grupo que contém o ID da peça. Paredes também participam da leitura, para bloquear objetos escondidos. Cliques/toques curtos selecionam; arrastos, vários ponteiros e gestos cancelados preservam a seleção. A lista oferece seleção pelo teclado e acesso a volumes ocultos.
+
+Um destaque de cantos usa os limites do volume e recursos gráficos reutilizáveis. Mudar a seleção não reconstrói o quarto nem entra no histórico de edição. A exportação oculta o destaque antes de renderizar e copiar os pixels. Veja o [guia de seleção 3D](SELECAO-3D.md). A profundidade representa o espaço da peça no piso; as cotas da planta vêm de `ROOM`, em unidades do desenho, sem conversão prometida para medidas físicas.
+
 ## Persistência e falhas
 
 [`storage.ts`](../src/features/setups/storage.ts) acessa `localStorage` por uma interface pequena. O documento utiliza a versão 1 e passa por validação: estrutura, tipos conhecidos, números finitos, cores, IDs únicos, datas e limites. Campos desconhecidos não são reconstruídos no documento validado.

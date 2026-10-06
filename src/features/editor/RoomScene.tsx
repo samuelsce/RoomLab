@@ -359,7 +359,7 @@ export function RoomScene({
           <path d="M115 557h530m-530-6v12m530-12v12" stroke="#8e9ba9" />
           <rect x="328" y="543" width="100" height="28" fill="#e8edf2" />
           <text x="380" y="563" textAnchor="middle">
-            3,60 m
+            {ROOM.width} u
           </text>
           <text
             x="698"
@@ -367,7 +367,7 @@ export function RoomScene({
             textAnchor="middle"
             transform="rotate(90 698 310)"
           >
-            2,80 m
+            {ROOM.height} u
           </text>
         </g>
       )}

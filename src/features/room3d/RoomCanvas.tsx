@@ -1,8 +1,14 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useEffectEvent, useRef } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import type { SceneName, SceneObject } from '../editor/scenes'
 import { buildRoom, disposeRoom } from './models'
+import {
+  createSelectionMarker,
+  isSelectionTap,
+  pickObject,
+  updateSelectionMarker,
+} from './selection'
 
 interface Props {
   scene: SceneName
@@ -11,6 +17,8 @@ interface Props {
   command: { action: 'left' | 'right' | 'reset'; version: number }
   onReady: () => void
   onUnavailable: () => void
+  selectedId?: string
+  onSelect?: (id: string | null) => void
 }
 interface Engine {
   scene: THREE.Scene
@@ -22,6 +30,7 @@ interface Engine {
   blue: THREE.PointLight
   violet: THREE.PointLight
   render: () => void
+  marker: ReturnType<typeof createSelectionMarker>
 }
 
 export default function RoomCanvas({
@@ -31,9 +40,13 @@ export default function RoomCanvas({
   command,
   onReady,
   onUnavailable,
+  selectedId,
+  onSelect,
 }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const engine = useRef<Engine | null>(null)
+  const editable = !!onSelect
+  const selectObject = useEffectEvent((id: string | null) => onSelect?.(id))
   useEffect(() => {
     const element = canvas.current!
     let renderer: THREE.WebGLRenderer
@@ -54,6 +67,8 @@ export default function RoomCanvas({
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.15
     const world = new THREE.Scene()
+    const marker = createSelectionMarker()
+    world.add(marker)
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 60)
     camera.position.set(-7, 6, 8)
     const controls = new OrbitControls(camera, element)
@@ -109,6 +124,7 @@ export default function RoomCanvas({
       blue,
       violet,
       render,
+      marker,
     }
     const resize = () => {
       const rect = element.getBoundingClientRect()
@@ -123,7 +139,13 @@ export default function RoomCanvas({
     const observer = new ResizeObserver(resize)
     observer.observe(element)
     controls.addEventListener('change', render)
-    const snapshot = () => renderer.render(world, camera)
+    const snapshot = () => {
+      const selected = marker.visible
+      marker.visible = false
+      renderer.render(world, camera)
+      marker.visible = selected
+      render()
+    }
     element.addEventListener('roomlab:snapshot', snapshot)
     const lost = (event: Event) => {
       event.preventDefault()
@@ -131,11 +153,125 @@ export default function RoomCanvas({
     }
     element.addEventListener('webglcontextlost', lost)
     document.addEventListener('visibilitychange', render)
+    const raycaster = new THREE.Raycaster()
+    const point = new THREE.Vector2()
+    const activePointers = new Set<number>()
+    let tap: { id: string | null } | null = null
+    let gesture: {
+      pointerId: number
+      x: number
+      y: number
+      started: number
+      distance: number
+      multiple: boolean
+      objectId: string | null
+    } | null = null
+    const pick = (event: PointerEvent) => {
+      const root = engine.current?.root
+      const rect = element.getBoundingClientRect()
+      if (
+        !root ||
+        !rect.width ||
+        !rect.height ||
+        event.clientX < rect.left ||
+        event.clientX > rect.right ||
+        event.clientY < rect.top ||
+        event.clientY > rect.bottom
+      )
+        return null
+      point.set(
+        ((event.clientX - rect.left) / rect.width) * 2 - 1,
+        -((event.clientY - rect.top) / rect.height) * 2 + 1,
+      )
+      return pickObject(raycaster, root, camera, point)
+    }
+    const pointerDown = (event: PointerEvent) => {
+      if (!editable || event.button !== 0) return
+      tap = null
+      activePointers.add(event.pointerId)
+      if (gesture) {
+        gesture.multiple = true
+        return
+      }
+      gesture = {
+        pointerId: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        started: event.timeStamp,
+        distance: 0,
+        multiple: activePointers.size > 1,
+        objectId: pick(event),
+      }
+    }
+    const pointerMove = (event: PointerEvent) => {
+      if (!editable) return
+      if (gesture && gesture.pointerId === event.pointerId) {
+        gesture.distance += Math.hypot(
+          event.clientX - gesture.x,
+          event.clientY - gesture.y,
+        )
+        gesture.x = event.clientX
+        gesture.y = event.clientY
+        element.style.cursor = 'grabbing'
+      } else if (!gesture && event.pointerType === 'mouse')
+        element.style.cursor = pick(event) ? 'pointer' : 'grab'
+    }
+    const pointerUp = (event: PointerEvent) => {
+      activePointers.delete(event.pointerId)
+      if (!gesture || gesture.pointerId !== event.pointerId) return
+      const finished = gesture
+      gesture = null
+      element.style.cursor = 'grab'
+      const rect = element.getBoundingClientRect()
+      if (
+        event.clientX < rect.left ||
+        event.clientX > rect.right ||
+        event.clientY < rect.top ||
+        event.clientY > rect.bottom
+      )
+        return
+      const distance =
+        finished.distance +
+        Math.hypot(event.clientX - finished.x, event.clientY - finished.y)
+      if (
+        isSelectionTap(
+          distance,
+          event.timeStamp - finished.started,
+          finished.multiple,
+        ) &&
+        pick(event) === finished.objectId
+      )
+        tap = { id: finished.objectId }
+    }
+    const pointerCancel = (event: PointerEvent) => {
+      activePointers.delete(event.pointerId)
+      gesture = null
+      tap = null
+      element.style.cursor = 'grab'
+    }
+    const click = () => {
+      if (!tap) return
+      const selected = tap.id
+      tap = null
+      // Touch synthesizes mouse focus before click. Reveal properties afterwards.
+      selectObject(selected)
+    }
+    // Capture runs before OrbitControls releases pointer capture on pointerup.
+    element.addEventListener('pointerdown', pointerDown, true)
+    element.addEventListener('pointermove', pointerMove, true)
+    element.addEventListener('pointerup', pointerUp, true)
+    element.addEventListener('pointercancel', pointerCancel)
+    element.addEventListener('click', click)
     resize()
     return () => {
       disposed = true
       cancelAnimationFrame(frame)
       observer.disconnect()
+      element.removeEventListener('pointerdown', pointerDown, true)
+      element.removeEventListener('pointermove', pointerMove, true)
+      element.removeEventListener('pointerup', pointerUp, true)
+      element.removeEventListener('pointercancel', pointerCancel)
+      element.removeEventListener('click', click)
       element.removeEventListener('webglcontextlost', lost)
       document.removeEventListener('visibilitychange', render)
       controls.dispose()
@@ -143,12 +279,14 @@ export default function RoomCanvas({
       if (engine.current?.root) disposeRoom(engine.current.root)
       renderer.dispose()
       sun.shadow.dispose()
+      marker.geometry.dispose()
+      marker.material.dispose()
       setTimeout(() => {
         if (!element.isConnected) renderer.forceContextLoss()
       }, 0)
       engine.current = null
     }
-  }, [onReady, onUnavailable])
+  }, [editable, onReady, onUnavailable])
 
   useEffect(() => {
     const current = engine.current
@@ -166,6 +304,18 @@ export default function RoomCanvas({
     current.violet.intensity = scene === 'gamer' && night ? 14 : 0
     current.render()
   }, [objects, scene, night])
+
+  useEffect(() => {
+    const current = engine.current
+    if (!current) return
+    const target = selectedId
+      ? current.root?.children.find(
+          (object) => object.userData.objectId === selectedId,
+        )
+      : undefined
+    updateSelectionMarker(current.marker, target)
+    current.render()
+  }, [objects, scene, night, selectedId, editable])
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -226,6 +376,19 @@ export default function RoomCanvas({
       aria-label="Visualização 3D do quarto"
       data-scene={scene}
       data-object-count={objects.length}
+      data-selected-id={selectedId}
+      tabIndex={editable ? 0 : undefined}
+      aria-description={
+        editable
+          ? 'Selecione uma peça com clique ou toque. Arraste para girar a câmera. Use a lista de objetos para selecionar pelo teclado.'
+          : undefined
+      }
+      onKeyDown={(event) => {
+        if (editable && event.key === 'Escape') {
+          event.preventDefault()
+          onSelect?.(null)
+        }
+      }}
     />
   )
 }

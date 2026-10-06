@@ -299,6 +299,47 @@
   border-radius: 9px;
   background: #dce4eb;
 }
+.room-selection {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #59dcd660;
+  border-radius: 7px;
+  background: #192639ed;
+  color: #f4f7fb;
+  font-size: 13px;
+  box-shadow: 0 3px 12px #19263926;
+}
+.room-selection > svg {
+  color: #59dcd6;
+  flex-shrink: 0;
+}
+.room-selection span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.room-selection button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -12px;
+  border: 0;
+  border-left: 1px solid #59dcd640;
+  background: transparent;
+  color: #f4f7fb;
+  border-radius: 0 7px 7px 0;
+}
+.room-selection button:hover {
+  background: #59dcd61a;
+}
 .view-switch button {
   min-height: 40px;
   padding: 8px 14px;
