@@ -1,14 +1,22 @@
-import { useId } from 'react'
+import { useId, useRef } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
 import { findItem } from '../catalog/catalog'
 import { ObjectArt } from '../catalog/ObjectArt'
 
 import { getSceneObjects } from './scenes'
 import type { SceneName, SceneObject } from './scenes'
+import { moveObject, resizeObject, ROOM, GRID_SIZE } from './geometry'
+import type { EditorAction } from './editorModel'
 
 interface Props {
   scene?: SceneName
   selected?: string | null
-  onSelect?: (object: SceneObject) => void
+  onSelect?: (object: SceneObject, reveal?: boolean) => void
+  objects?: SceneObject[]
+  onEdit?: (action: EditorAction) => void
+  onDeselect?: () => void
+  onDropObject?: (kind: string, point: { x: number; y: number }) => void
+  showGrid?: boolean
   showMeasurements?: boolean
 }
 
@@ -16,22 +24,141 @@ export function RoomScene({
   scene = 'study',
   selected,
   onSelect,
+  objects: suppliedObjects,
+  onEdit,
+  onDeselect,
+  onDropObject,
+  showGrid = false,
   showMeasurements = false,
 }: Props) {
   const id = useId().replace(/:/g, '')
-  const objects = getSceneObjects(scene)
+  const objects = suppliedObjects ?? getSceneObjects(scene)
+  const svgRef = useRef<SVGSVGElement>(null)
+  const gesture = useRef<{
+    object: SceneObject
+    start: DOMPoint
+    mode: 'move' | 'resize'
+    pointerId: number
+    capture: SVGRectElement
+  } | null>(null)
+  const pointFromClient = (x: number, y: number) => {
+    const matrix = svgRef.current?.getScreenCTM()
+    return matrix ? new DOMPoint(x, y).matrixTransform(matrix.inverse()) : null
+  }
+  const startGesture = (
+    event: ReactPointerEvent<SVGRectElement>,
+    object: SceneObject,
+    mode: 'move' | 'resize',
+  ) => {
+    if (!onEdit || !event.isPrimary || event.button !== 0 || gesture.current)
+      return
+    const start = pointFromClient(event.clientX, event.clientY)
+    if (!start) return
+    event.stopPropagation()
+    onSelect?.(object, false)
+    event.currentTarget.focus({ preventScroll: true })
+    gesture.current = {
+      object,
+      start,
+      mode,
+      pointerId: event.pointerId,
+      capture: event.currentTarget,
+    }
+    event.currentTarget.setPointerCapture(event.pointerId)
+    onEdit({ type: 'begin' })
+  }
+  const endGesture = (cancel: boolean) => {
+    const current = gesture.current
+    if (!current) return
+    gesture.current = null
+    onEdit?.({ type: cancel ? 'cancel' : 'end' })
+    if (cancel && current.capture.hasPointerCapture(current.pointerId))
+      current.capture.releasePointerCapture(current.pointerId)
+  }
   return (
     <svg
       className="room-scene"
+      ref={svgRef}
+      data-testid={onEdit ? 'editable-room' : undefined}
       viewBox="0 0 760 610"
       role={onSelect ? 'group' : 'img'}
       aria-label={
-        scene === 'empty'
+        objects.length === 0
           ? 'Quarto vazio em vista superior'
-          : 'Quarto ilustrado em vista superior com mesa, monitor, cadeira e plantas'
+          : onEdit
+            ? 'Quarto em vista superior com peças editáveis'
+            : 'Quarto ilustrado em vista superior com mesa, monitor, cadeira e plantas'
       }
+      onPointerDown={(event) => {
+        if (onEdit && !(event.target as Element).closest('[data-object-id]'))
+          onDeselect?.()
+      }}
+      onPointerMove={(event) => {
+        const current = gesture.current
+        if (!current || event.pointerId !== current.pointerId) return
+        const point = pointFromClient(event.clientX, event.clientY)
+        if (!point) return
+        const dx = point.x - current.start.x
+        const dy = point.y - current.start.y
+        const object =
+          current.mode === 'move'
+            ? moveObject(
+                current.object,
+                current.object.x + dx,
+                current.object.y + dy,
+                showGrid,
+              )
+            : resizeObject(current.object, dx, dy)
+        onEdit?.({ type: 'preview', object })
+      }}
+      onPointerUp={(event) => {
+        if (event.pointerId === gesture.current?.pointerId) endGesture(false)
+      }}
+      onPointerCancel={() => endGesture(true)}
+      onLostPointerCapture={() => endGesture(true)}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && gesture.current) {
+          event.preventDefault()
+          event.stopPropagation()
+          endGesture(true)
+        }
+      }}
+      onDragOver={(event) => {
+        if (onEdit) event.preventDefault()
+      }}
+      onDrop={(event) => {
+        if (!onEdit) return
+        event.preventDefault()
+        const kind = event.dataTransfer.getData('application/roomlab-object')
+        const point = pointFromClient(event.clientX, event.clientY)
+        if (
+          point &&
+          point.x >= ROOM.left &&
+          point.x <= ROOM.left + ROOM.width &&
+          point.y >= ROOM.top &&
+          point.y <= ROOM.top + ROOM.height
+        ) {
+          onDropObject?.(kind, { x: point.x, y: point.y })
+        }
+      }}
     >
       <defs>
+        <pattern
+          id={`${id}-grid`}
+          x={ROOM.left}
+          y={ROOM.top}
+          width={GRID_SIZE}
+          height={GRID_SIZE}
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d={`M${GRID_SIZE} 0H0V${GRID_SIZE}`}
+            fill="none"
+            stroke="#405f8b"
+            strokeOpacity=".25"
+            strokeWidth=".7"
+          />
+        </pattern>
         <pattern
           id={`${id}-floor`}
           width="76"
@@ -115,8 +242,22 @@ export function RoomScene({
         <path d="M651 213v142m-6-72h12" stroke="#fff" strokeWidth="3" />
       </g>
       <path d="m640 244-160 70v121l160-83Z" fill="#fff" opacity=".14" />
+      {showGrid && (
+        <rect
+          x={ROOM.left}
+          y={ROOM.top}
+          width={ROOM.width}
+          height={ROOM.height}
+          fill={`url(#${id}-grid)`}
+          pointerEvents="none"
+        />
+      )}
       {objects.map((object) => (
-        <g key={object.id} transform={`translate(${object.x} ${object.y})`}>
+        <g
+          key={object.id}
+          data-object-id={object.id}
+          transform={`translate(${object.x} ${object.y}) rotate(${object.rotation ?? 0} ${object.w / 2} ${object.h / 2})`}
+        >
           {selected === object.id && (
             <rect
               x="-5"
@@ -146,7 +287,11 @@ export function RoomScene({
               role="button"
               tabIndex={0}
               aria-label={`Selecionar ${findItem(object.kind).name.toLowerCase()}`}
-              onClick={() => onSelect(object)}
+              aria-pressed={selected === object.id}
+              onPointerDown={(event) => startGesture(event, object, 'move')}
+              onClick={() => {
+                if (!onEdit) onSelect(object)
+              }}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault()
@@ -154,6 +299,52 @@ export function RoomScene({
                 }
               }}
             />
+          )}
+          {onEdit && selected === object.id && (
+            <g>
+              <rect
+                x={object.w - 6}
+                y={object.h - 6}
+                width="12"
+                height="12"
+                rx="2"
+                fill="#2457d6"
+                stroke="white"
+                strokeWidth="2"
+                pointerEvents="none"
+              />
+              <rect
+                className="resize-hit-area"
+                x={object.w - 16}
+                y={object.h - 16}
+                width="32"
+                height="32"
+                fill="transparent"
+                role="button"
+                tabIndex={0}
+                aria-label={`Redimensionar ${findItem(object.kind).name.toLowerCase()}`}
+                onPointerDown={(event) => startGesture(event, object, 'resize')}
+                onKeyDown={(event) => {
+                  const step = event.shiftKey ? 10 : 2
+                  const deltas: Record<string, [number, number]> = {
+                    ArrowRight: [step, 0],
+                    ArrowLeft: [-step, 0],
+                    ArrowDown: [0, step],
+                    ArrowUp: [0, -step],
+                  }
+                  const delta = deltas[event.key]
+                  if (delta) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    onEdit({
+                      type: 'update',
+                      id: object.id,
+                      patch: resizeObject(object, ...delta),
+                    })
+                  }
+                }}
+              />
+            </g>
           )}
         </g>
       ))}

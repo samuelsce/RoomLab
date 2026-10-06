@@ -21,23 +21,21 @@ test('home leads to the editor and catalog details without runtime errors', asyn
   })
   await page.getByRole('link', { name: 'Montar meu setup' }).click()
   await expect(page).toHaveURL(/\/editor$/)
-  await expect(page.getByText('Demonstração', { exact: true })).toBeVisible()
+  await expect(page.getByText('Não salvo', { exact: true })).toBeVisible()
   await page
     .getByRole('searchbox', { name: 'Buscar objetos' })
     .fill('luminaria')
   await expect(
-    page.getByRole('button', { name: 'Ver detalhes: Luminária' }),
+    page.getByRole('button', { name: 'Adicionar luminária' }),
   ).toBeVisible()
   await expect(
-    page.getByRole('button', { name: 'Ver detalhes: Monitor', exact: true }),
+    page.getByRole('button', { name: 'Adicionar monitor', exact: true }),
   ).toHaveCount(0)
-  await page.getByRole('button', { name: 'Ver detalhes: Luminária' }).click()
+  await page.getByRole('button', { name: 'Adicionar luminária' }).click()
   await expect(
     page.getByRole('heading', { name: 'Luminária', exact: true }),
   ).toBeVisible()
-  await expect(
-    page.getByText('Prévia do catálogo', { exact: true }),
-  ).toBeVisible()
+  await expect(page.getByText('11 objetos', { exact: true })).toBeVisible()
   await page
     .getByRole('button', { name: 'Selecionar monitor', exact: true })
     .focus()
@@ -50,7 +48,7 @@ test('home leads to the editor and catalog details without runtime errors', asyn
   ).toBeVisible()
   await page.getByRole('button', { name: 'Aumentar zoom' }).click()
   await expect(page.getByLabel('Zoom', { exact: true })).toHaveText('110%')
-  await page.getByRole('button', { name: 'Restaurar zoom' }).click()
+  await page.getByRole('button', { name: 'Ajustar quarto à tela' }).click()
   await expect(page.getByLabel('Zoom', { exact: true })).toHaveText('100%')
   expect(
     await page.evaluate(
@@ -71,8 +69,10 @@ test('empty room and example selection survive direct navigation and reload', as
   await expect(
     page.getByRole('heading', { name: 'Espaço para suas ideias.' }),
   ).toBeVisible()
-  await page.getByRole('link', { name: 'Usar quarto de exemplo' }).click()
-  await expect(page).toHaveURL(/scene=study/)
+  await page
+    .getByRole('button', { name: 'Adicionar mesa', exact: true })
+    .click()
+  await expect(page.getByText('1 objeto', { exact: true })).toBeVisible()
   await expect(
     page.getByRole('button', { name: 'Selecionar mesa de madeira' }),
   ).toBeVisible()
@@ -89,7 +89,9 @@ test('empty room and example selection survive direct navigation and reload', as
     .getByRole('button', { name: 'Selecionar tapete', exact: true })
     .focus()
   await page.keyboard.press('Enter')
-  await expect(page.getByText('Verde suave', { exact: true })).toBeVisible()
+  await expect(
+    page.locator('[data-object-id="rug"] rect[fill="#99ae95"]').first(),
+  ).toBeVisible()
 })
 
 test('filters can recover from an empty result and unknown routes show a way back', async ({
@@ -97,17 +99,13 @@ test('filters can recover from an empty result and unknown routes show a way bac
 }) => {
   await page.goto('/editor')
   await page.getByRole('button', { name: 'Tecnologia', exact: true }).click()
-  await expect(page.getByRole('button', { name: 'Ver detalhes:' })).toHaveCount(
-    4,
-  )
+  await expect(page.getByRole('button', { name: 'Adicionar ' })).toHaveCount(4)
   await page
     .getByRole('searchbox', { name: 'Buscar objetos' })
     .fill('inexistente')
   await expect(page.getByText('Nenhum objeto encontrado.')).toBeVisible()
   await page.getByRole('button', { name: 'Limpar filtros' }).click()
-  await expect(page.getByRole('button', { name: 'Ver detalhes:' })).toHaveCount(
-    12,
-  )
+  await expect(page.getByRole('button', { name: 'Adicionar ' })).toHaveCount(12)
   await page.goto('/nao-existe')
   await page.getByRole('link', { name: 'Voltar ao início' }).click()
   await expect(page).toHaveURL('/')
@@ -130,7 +128,7 @@ test('narrow screen and reduced motion retain usable layout and keyboard entry',
     ),
   ).toBe(true)
   await page.goto('/editor')
-  await page.getByRole('button', { name: 'Ver detalhes: Planta' }).click()
+  await page.getByRole('button', { name: 'Adicionar planta' }).click()
   await expect(
     page.getByRole('heading', { name: 'Planta', exact: true }),
   ).toBeVisible()
