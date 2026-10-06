@@ -15,6 +15,7 @@ import {
   Redo2,
   Grid2X2,
   Save,
+  Share2,
 } from 'lucide-react'
 import { Brand } from '../components/Brand'
 import { catalog, categories, findItem } from '../features/catalog/catalog'
@@ -31,6 +32,8 @@ import type { SavedSetup } from '../features/setups/storage'
 import { useSetupSave } from '../features/setups/useSetupSave'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { exportJson, exportPng } from '../features/setups/export'
+import { ShareDialog } from '../features/sharing/ShareDialog'
+import type { SharedDocument } from '../features/sharing/document'
 
 export function Editor() {
   const [params] = useSearchParams()
@@ -116,6 +119,7 @@ function EditorWorkspace({
     workspaceKey,
   )
   const exportScene = useRef<HTMLDivElement>(null)
+  const [sharing, setSharing] = useState<SharedDocument | null>(null)
   const [exporting, setExporting] = useState(false)
   const [exportMessage, setExportMessage] = useState('')
   const [exportError, setExportError] = useState('')
@@ -285,6 +289,21 @@ function EditorWorkspace({
           </span>
         </div>
         <div className="save-actions">
+          <button
+            className="button button-small"
+            disabled={isDragging}
+            onClick={() =>
+              setSharing({
+                schemaVersion: 1,
+                name: project.name,
+                scene,
+                objects,
+              })
+            }
+          >
+            <Share2 size={16} aria-hidden="true" />
+            Compartilhar
+          </button>
           <button
             className="button button-small button-primary"
             disabled={isDragging}
@@ -628,6 +647,9 @@ function EditorWorkspace({
           </aside>
         </div>
       </main>
+      {sharing && (
+        <ShareDialog document={sharing} onClose={() => setSharing(null)} />
+      )}
       <div ref={exportScene} hidden aria-hidden="true">
         <RoomScene scene={scene} objects={objects} />
       </div>
