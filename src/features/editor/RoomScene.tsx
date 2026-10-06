@@ -165,7 +165,11 @@ export function RoomScene({
           height="42"
           patternUnits="userSpaceOnUse"
         >
-          <rect width="76" height="42" fill="#e0cfb6" />
+          <rect
+            width="76"
+            height="42"
+            fill={scene === 'gamer' ? '#a49d97' : '#e0cfb6'}
+          />
           <path
             d="M0 0H76M0 42H76M38 0v42"
             stroke="#c7b393"
@@ -255,11 +259,13 @@ export function RoomScene({
       {objects.map((object) => (
         <g
           key={object.id}
+          className="room-object"
           data-object-id={onEdit ? object.id : undefined}
           transform={`translate(${object.x} ${object.y}) rotate(${object.rotation ?? 0} ${object.w / 2} ${object.h / 2})`}
         >
           {selected === object.id && (
             <rect
+              className="scene-selection"
               x="-5"
               y="-5"
               width={object.w + 10}

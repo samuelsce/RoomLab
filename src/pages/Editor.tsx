@@ -22,6 +22,7 @@ import { catalog, categories, findItem } from '../features/catalog/catalog'
 import type { Category, ObjectKind } from '../features/catalog/catalog'
 import { ObjectThumbnail } from '../features/catalog/ObjectArt'
 import { RoomScene } from '../features/editor/RoomScene'
+import { RoomPreview } from '../features/room3d/RoomPreview'
 import { ObjectProperties } from '../features/editor/ObjectProperties'
 import { useRoomEditor } from '../features/editor/useRoomEditor'
 import { MAX_OBJECTS } from '../features/editor/editorModel'
@@ -31,7 +32,7 @@ import { readSetups, storageMessage } from '../features/setups/storage'
 import type { SavedSetup } from '../features/setups/storage'
 import { useSetupSave } from '../features/setups/useSetupSave'
 import { ConfirmDialog } from '../components/ConfirmDialog'
-import { exportJson, exportPng } from '../features/setups/export'
+import { exportJson, exportPng, export3dPng } from '../features/setups/export'
 import { ShareDialog } from '../features/sharing/ShareDialog'
 import type { SharedDocument } from '../features/sharing/document'
 
@@ -40,7 +41,10 @@ export function Editor() {
   const location = useLocation()
   const rawScene = params.get('scene')
   const scene: SceneName =
-    rawScene === 'dual' || rawScene === 'plants' || rawScene === 'empty'
+    rawScene === 'dual' ||
+    rawScene === 'plants' ||
+    rawScene === 'empty' ||
+    rawScene === 'gamer'
       ? rawScene
       : 'study'
   const setupId = params.get('setup')
@@ -119,6 +123,7 @@ function EditorWorkspace({
     workspaceKey,
   )
   const exportScene = useRef<HTMLDivElement>(null)
+  const previewScene = useRef<HTMLDivElement>(null)
   const [sharing, setSharing] = useState<SharedDocument | null>(null)
   const [exporting, setExporting] = useState(false)
   const [exportMessage, setExportMessage] = useState('')
@@ -131,10 +136,26 @@ function EditorWorkspace({
       const name = project.name.trim()
       if (!name) throw new Error('Dê um nome ao setup antes de exportar.')
       if (format === 'png') {
-        const svg = exportScene.current?.querySelector('svg')
-        if (!svg)
-          throw new Error('Não foi possível gerar a imagem. Tente novamente.')
-        await exportPng(svg, name)
+        if (view === '3d') {
+          const preview = previewScene.current?.querySelector<HTMLElement>(
+            '.room-preview[data-ready="true"]',
+          )
+          const canvas = preview?.querySelector('canvas')
+          if (!canvas || !preview)
+            throw new Error(
+              'Aguarde o 3D carregar ou escolha a planta para baixar a imagem.',
+            )
+          await export3dPng(
+            canvas,
+            name,
+            getComputedStyle(preview).backgroundColor,
+          )
+        } else {
+          const svg = exportScene.current?.querySelector('svg')
+          if (!svg)
+            throw new Error('Não foi possível gerar a imagem. Tente novamente.')
+          await exportPng(svg, name)
+        }
       } else {
         const now = new Date().toISOString()
         exportJson({
@@ -177,6 +198,9 @@ function EditorWorkspace({
   const [panel, setPanel] = useState<'catalog' | 'properties'>('catalog')
   const [zoom, setZoom] = useState(100)
   const [showGrid, setShowGrid] = useState(false)
+  const [view, setView] = useState<'plan' | '3d'>(
+    scene === 'gamer' ? '3d' : 'plan',
+  )
   const propertiesHeading = useRef<HTMLHeadingElement>(null)
   const objects = state.objects
   const canAdd = objects.length < MAX_OBJECTS
@@ -347,6 +371,11 @@ function EditorWorkspace({
         </p>
         <div className="export-bar">
           <span>Leve seu quarto com você</span>
+          {scene !== 'gamer' && (
+            <Link to="/editor?scene=gamer" className="gamer-start">
+              Experimentar quarto gamer
+            </Link>
+          )}
           <button
             disabled={isDragging || exporting}
             onClick={() => void exportFile('png')}
@@ -383,7 +412,9 @@ function EditorWorkspace({
               </span>
             </div>
             <p className="panel-description">
-              Clique para adicionar ou arraste uma peça até o quarto.
+              {view === '3d'
+                ? 'Clique para adicionar. Use a planta para arrastar as peças.'
+                : 'Clique para adicionar ou arraste uma peça até o quarto.'}
             </p>
             <label className="search-field">
               <Search size={17} aria-hidden="true" />
@@ -413,7 +444,7 @@ function EditorWorkspace({
                   key={object.id}
                   aria-label={`Adicionar ${object.name.toLowerCase()}`}
                   disabled={!canAdd || isDragging}
-                  draggable={canAdd}
+                  draggable={canAdd && view === 'plan'}
                   onDragStart={(event) => {
                     event.dataTransfer.setData(
                       'application/roomlab-object',
@@ -460,42 +491,64 @@ function EditorWorkspace({
           <section className="scene-panel" aria-label="Editor do quarto">
             <div className="scene-heading">
               <span>Seu quarto</span>
+              <div className="view-switch" aria-label="Vista do quarto">
+                <button
+                  aria-pressed={view === 'plan'}
+                  disabled={isDragging}
+                  onClick={() => setView('plan')}
+                >
+                  Planta 2D
+                </button>
+                <button
+                  aria-pressed={view === '3d'}
+                  disabled={isDragging}
+                  onClick={() => setView('3d')}
+                >
+                  Ver em 3D
+                </button>
+              </div>
               <span>
                 {objects.length} {objects.length === 1 ? 'objeto' : 'objetos'}
               </span>
             </div>
-            <div className="scene-viewport">
-              <div
-                className="zoomed-scene"
-                style={{ transform: `scale(${zoom / 100})` }}
-              >
-                <RoomScene
-                  scene={scene}
-                  objects={objects}
-                  selected={selectedObject?.id}
-                  onSelect={selectObject}
-                  onDeselect={() => select(null)}
-                  onEdit={dispatch}
-                  onDropObject={(kind, point) => {
-                    if (catalog.some((item) => item.id === kind))
-                      addObject(kind as ObjectKind, point)
-                  }}
-                  showGrid={showGrid}
-                  showMeasurements
-                />
-              </div>
-              {objects.length === 0 && (
-                <div className="empty-room-message">
-                  <Armchair size={30} aria-hidden="true" />
-                  <h2>Espaço para suas ideias.</h2>
-                  <p>Comece adicionando uma mesa pelo catálogo.</p>
-                  <button
-                    className="button button-small"
-                    onClick={() => addObject('desk')}
+            <div className="scene-viewport" ref={previewScene}>
+              {view === '3d' ? (
+                <RoomPreview scene={scene} objects={objects} />
+              ) : (
+                <>
+                  <div
+                    className="zoomed-scene"
+                    style={{ transform: `scale(${zoom / 100})` }}
                   >
-                    Adicionar mesa
-                  </button>
-                </div>
+                    <RoomScene
+                      scene={scene}
+                      objects={objects}
+                      selected={selectedObject?.id}
+                      onSelect={selectObject}
+                      onDeselect={() => select(null)}
+                      onEdit={dispatch}
+                      onDropObject={(kind, point) => {
+                        if (catalog.some((item) => item.id === kind))
+                          addObject(kind as ObjectKind, point)
+                      }}
+                      showGrid={showGrid}
+                      showMeasurements
+                    />
+                  </div>
+                  {objects.length === 0 && (
+                    <div className="empty-room-message">
+                      <Armchair size={30} aria-hidden="true" />
+                      <h2>Espaço para suas ideias.</h2>
+                      <p>Comece adicionando uma mesa pelo catálogo.</p>
+                      <button
+                        className="button button-small"
+                        onClick={() => addObject('desk')}
+                      >
+                        Adicionar mesa
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
             <div className="scene-toolbar">
@@ -519,7 +572,7 @@ function EditorWorkspace({
                 <button
                   className="grid-toggle"
                   aria-pressed={showGrid}
-                  disabled={isDragging}
+                  disabled={isDragging || view === '3d'}
                   onClick={() => setShowGrid((value) => !value)}
                 >
                   <Grid2X2 size={17} aria-hidden="true" />
@@ -529,7 +582,7 @@ function EditorWorkspace({
               <div className="zoom-controls">
                 <button
                   aria-label="Diminuir zoom"
-                  disabled={zoom <= 80 || isDragging}
+                  disabled={zoom <= 80 || isDragging || view === '3d'}
                   onClick={() => setZoom((value) => value - 10)}
                 >
                   <Minus size={17} aria-hidden="true" />
@@ -539,14 +592,14 @@ function EditorWorkspace({
                 </output>
                 <button
                   aria-label="Aumentar zoom"
-                  disabled={zoom >= 130 || isDragging}
+                  disabled={zoom >= 130 || isDragging || view === '3d'}
                   onClick={() => setZoom((value) => value + 10)}
                 >
                   <Plus size={17} aria-hidden="true" />
                 </button>
                 <button
                   aria-label="Ajustar quarto à tela"
-                  disabled={isDragging}
+                  disabled={isDragging || view === '3d'}
                   onClick={() => setZoom(100)}
                 >
                   <Scan size={17} aria-hidden="true" />
@@ -554,13 +607,16 @@ function EditorWorkspace({
               </div>
             </div>
             <p className="scene-hint">
-              Arraste para mover. Use o canto azul para redimensionar. Setas
-              movem a seleção; Shift aumenta o passo.
+              {view === '3d'
+                ? 'Arraste para girar a câmera. Edite pela lista de objetos ou volte à planta para posicionar as peças.'
+                : 'Arraste para mover. Use o canto azul para redimensionar. Setas movem a seleção; Shift aumenta o passo.'}
             </p>
             <p className="grid-note">
-              {showGrid
-                ? 'Grade ativa: o arrasto se ajusta a cada 10 unidades.'
-                : 'Movimento livre. Ative a grade para alinhar as peças.'}
+              {view === '3d'
+                ? 'A luz e a câmera são controles de visualização. O PNG acompanha a vista atual.'
+                : showGrid
+                  ? 'Grade ativa: o arrasto se ajusta a cada 10 unidades.'
+                  : 'Movimento livre. Ative a grade para alinhar as peças.'}
             </p>
           </section>
           <div className="mobile-panel-switch" aria-label="Painel do editor">

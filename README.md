@@ -2,17 +2,20 @@
 
 Projeto de portfólio front-end: um editor visual para montar e personalizar um quarto com um setup de trabalho ou jogos.
 
-Status: quarta entrega implementada, com editor, biblioteca local e compartilhamento por link. Desenvolvimento em `feat/setup-sharing`.
+Status: quinta entrega implementada, com estúdio 3D, quarto gamer, biblioteca local e compartilhamento por link. Desenvolvimento em `feat/immersive-room-design`.
 
 **[Experimentar a demo no GitHub Pages](https://samuelsce.github.io/RoomLab/)**
 
-![Home do RoomLab](docs/screenshots/home-desktop.png)
+![Home do RoomLab com quarto gamer 3D](docs/screenshots/studio-desktop.png)
 
 ## O que já funciona
 
 - Home responsiva e navegação para o editor.
-- Três quartos demonstrativos e uma cena vazia.
-- Catálogo de 12 peças, busca com ou sem acento e filtros por categoria.
+- Quatro ambientes, incluindo quarto gamer, e uma cena vazia.
+- Catálogo de 13 peças, incluindo cama, busca com ou sem acento e filtros por categoria.
+- Visualização 3D com mobiliário volumétrico, materiais, sombras, câmera e luz natural/noturna.
+- Alternância entre planta e 3D, com PNG da vista atual e alternativa em planta sem suporte gráfico.
+- Animações de câmera, ambiente, peças e diálogos, respeitando movimento reduzido.
 - Seleção pela cena ou lista, detalhes dos objetos e zoom.
 - Adicionar por clique/toque ou arrasto do catálogo no desktop.
 - Mover com mouse/toque ou teclado, girar, redimensionar e trocar cores.
@@ -34,7 +37,7 @@ npm ci
 npm run dev
 ```
 
-Abra o endereço mostrado no terminal. As rotas principais são `/`, `/editor` e `/setups`. Os exemplos também podem ser abertos diretamente em `/editor?scene=study`, `dual`, `plants` ou `empty`. Um setup salvo abre em `/editor?setup=<id>` no mesmo navegador e endereço do site.
+Abra o endereço mostrado no terminal. As rotas principais são `/`, `/editor` e `/setups`. Os exemplos também podem ser abertos diretamente em `/editor?scene=study`, `dual`, `plants`, `gamer` ou `empty`. Um setup salvo abre em `/editor?setup=<id>` no mesmo navegador e endereço do site.
 
 ## Verificar
 
@@ -51,9 +54,11 @@ npm run test:pages
 
 Os testes usam Chromium em tamanhos de desktop, tablet e celular; isso não representa validação em dispositivos físicos ou em todos os navegadores. Para atualizar as capturas, mantenha o servidor local na porta 5173 e execute `npm run capture:preview`.
 
+Para as capturas da nova home e do quarto gamer, execute `node scripts/capture-studio.mjs` com o servidor na porta 5174. Outra URL pode ser definida em `ROOMLAB_PREVIEW_URL`. Os modelos 3D são estilizados; alturas e medidas são ilustrativas. Luz e câmera são controles temporários de visualização, enquanto os objetos e suas transformações são salvos no documento.
+
 ## Tecnologias
 
-React, TypeScript, Vite, React Router, CSS com tokens, SVG, Lucide e Playwright. As fontes Barlow e Barlow Semi Condensed são servidas localmente pelo Fontsource. Versões reproduzíveis registradas no lockfile.
+React, TypeScript, Vite, React Router, Three.js, CSS com tokens, SVG, Lucide e Playwright. As fontes Barlow e Barlow Semi Condensed são servidas localmente pelo Fontsource. Versões reproduzíveis registradas no lockfile.
 
 ## Objetivo
 
@@ -68,6 +73,7 @@ Demonstrar interfaces responsivas, manipulação gráfica, estado complexo, aces
 - [Segunda entrega: geometria, interações e histórico](docs/ENTREGA-02.md)
 - [Terceira entrega: persistência, biblioteca e backups](docs/ENTREGA-03.md)
 - [Quarta entrega: links e GitHub Pages](docs/ENTREGA-04.md)
+- [Quinta entrega: direção visual, quarto 3D e guia de aprendizado](docs/ENTREGA-05.md)
 - [Créditos dos assets](docs/CREDITOS.md)
 
 ## Versionamento

@@ -47,7 +47,7 @@ export function parseSetups(raw: string | null): SavedSetup[] {
         !date(setup.createdAt) ||
         !date(setup.updatedAt) ||
         typeof setup.scene !== 'string' ||
-        !['study', 'dual', 'plants', 'empty'].includes(setup.scene) ||
+        !['study', 'dual', 'plants', 'gamer', 'empty'].includes(setup.scene) ||
         !Array.isArray(setup.objects) ||
         setup.objects.length > MAX_OBJECTS
       )

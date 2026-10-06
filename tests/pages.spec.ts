@@ -10,7 +10,7 @@ test('built Pages app reloads hash routes and opens a share without a server or 
   await page
     .getByRole('link', { name: 'Montar meu setup', exact: true })
     .click()
-  await expect(page).toHaveURL(/\/RoomLab\/#\/editor$/)
+  await expect(page).toHaveURL(/\/RoomLab\/#\/editor\?scene=gamer$/)
   await page.getByLabel('Nome do setup').fill('Setup no GitHub Pages')
   await page.getByRole('button', { name: 'Salvar', exact: true }).click()
   await page.reload()
@@ -43,6 +43,9 @@ test('built Pages app reloads hash routes and opens a share without a server or 
   ).toBe(true)
   await recipient.getByRole('button', { name: 'Editar uma cópia' }).click()
   await expect(recipient).toHaveURL(/\/RoomLab\/#\/editor\?setup=/)
+  await recipient
+    .getByRole('button', { name: 'Planta 2D', exact: true })
+    .click()
   await expect(recipient.locator('[data-object-id]')).toHaveCount(10)
   await expect(
     recipient.getByText('Salvo neste navegador', { exact: true }),

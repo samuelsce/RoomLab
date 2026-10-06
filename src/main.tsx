@@ -11,6 +11,7 @@ import '@fontsource/barlow/latin-500.css'
 import '@fontsource/barlow/latin-600.css'
 import '@fontsource/barlow-semi-condensed/latin-600.css'
 import './styles.css'
+import './studio.css'
 
 const routes = [{ path: '*', element: <App /> }]
 const router =

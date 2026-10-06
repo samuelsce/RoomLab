@@ -7,7 +7,7 @@ test('home leads to the editor and catalog details without runtime errors', asyn
   page.on('pageerror', (error) => errors.push(error.message))
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'Monte um quartoque combinacom seu setup.',
+    'Seu quarto.Seu universo.',
   )
   await page.evaluate(() => document.fonts.ready)
   expect(
@@ -19,8 +19,9 @@ test('home leads to the editor and catalog details without runtime errors', asyn
     path: testInfo.outputPath('home.png'),
     fullPage: true,
   })
+  await page.getByRole('button', { name: 'Luz natural', exact: true }).click()
   await page.getByRole('link', { name: 'Montar meu setup' }).click()
-  await expect(page).toHaveURL(/\/editor$/)
+  await expect(page).toHaveURL(/\/editor\?scene=study$/)
   await expect(page.getByText('Não salvo', { exact: true })).toBeVisible()
   await page
     .getByRole('searchbox', { name: 'Buscar objetos' })
@@ -105,7 +106,7 @@ test('filters can recover from an empty result and unknown routes show a way bac
     .fill('inexistente')
   await expect(page.getByText('Nenhum objeto encontrado.')).toBeVisible()
   await page.getByRole('button', { name: 'Limpar filtros' }).click()
-  await expect(page.getByRole('button', { name: 'Adicionar ' })).toHaveCount(12)
+  await expect(page.getByRole('button', { name: 'Adicionar ' })).toHaveCount(13)
   await page.goto('/nao-existe')
   await page.getByRole('link', { name: 'Voltar ao início' }).click()
   await expect(page).toHaveURL('/')

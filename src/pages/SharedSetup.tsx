@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router'
 import { ArrowLeft, Copy, Download } from 'lucide-react'
 import { Brand } from '../components/Brand'
 import { RoomScene } from '../features/editor/RoomScene'
+import { RoomPreview } from '../features/room3d/RoomPreview'
 import { decodeSharedDocument } from '../features/sharing/codec'
 import type { SharedDocument } from '../features/sharing/document'
 import { saveSetup, storageMessage } from '../features/setups/storage'
@@ -21,6 +22,7 @@ function SharedViewer({ token }: { token: string }) {
   const [error, setError] = useState('')
   const [copyError, setCopyError] = useState('')
   const [message, setMessage] = useState('')
+  const [view, setView] = useState<'plan' | '3d'>('3d')
   const navigate = useNavigate()
   useEffect(() => {
     let active = true
@@ -109,7 +111,31 @@ function SharedViewer({ token }: { token: string }) {
               </button>
             </div>
             <div className="shared-room">
-              <RoomScene scene={document.scene} objects={document.objects} />
+              <div
+                className="shared-view-switch view-switch"
+                aria-label="Vista do quarto"
+              >
+                <button
+                  aria-pressed={view === 'plan'}
+                  onClick={() => setView('plan')}
+                >
+                  Planta 2D
+                </button>
+                <button
+                  aria-pressed={view === '3d'}
+                  onClick={() => setView('3d')}
+                >
+                  Ver em 3D
+                </button>
+              </div>
+              {view === '3d' ? (
+                <RoomPreview
+                  scene={document.scene}
+                  objects={document.objects}
+                />
+              ) : (
+                <RoomScene scene={document.scene} objects={document.objects} />
+              )}
             </div>
             <div className="shared-bottom">
               <p>

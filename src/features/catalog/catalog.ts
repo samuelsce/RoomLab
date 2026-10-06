@@ -11,6 +11,7 @@ export type ObjectKind =
   | 'rug'
   | 'frame'
   | 'shelf'
+  | 'bed'
 export type Category = 'Todos' | 'Móveis' | 'Tecnologia' | 'Decoração'
 export interface CatalogItem {
   id: ObjectKind
@@ -22,6 +23,14 @@ export interface CatalogItem {
 }
 
 export const catalog: CatalogItem[] = [
+  {
+    id: 'bed',
+    name: 'Cama',
+    category: 'Móveis',
+    dimensions: '90 × 190 cm',
+    color: '#657391',
+    description: 'Complete o quarto com uma cama, travesseiros e uma manta.',
+  },
   {
     id: 'desk',
     name: 'Mesa de madeira',
